@@ -1,0 +1,205 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JDialog.java to edit this template
+ */
+package Dialog;
+
+import Modelos.FileManager;
+import Modelos.Funcion;
+import java.awt.GridLayout;
+import java.io.IOException;
+import java.sql.Date;
+import java.sql.Time;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
+
+/**
+ *
+ * @author rocio
+ */
+public class FuncionDialog extends javax.swing.JDialog {
+
+   
+    private JTextField idPeliculaField;
+    private JTextField fechaField;
+    private JTextField horaField;
+    private JTextField salaField;
+    private JButton guardarButton;
+
+    /**
+     * Creates new form FuncionDialog
+     */
+    public FuncionDialog(java.awt.Frame parent, boolean modal) {
+        super(parent, modal);
+        initComponents();
+        initCustomComponents();
+    }
+
+
+    private void initCustomComponents() {
+       
+        setLayout(new GridLayout(6, 2, 10, 10)); // 6 filas 2 columns y espacio de 10 entre componentes
+
+        // Crear los campos de texto
+        idPeliculaField = new JTextField();
+        fechaField = new JTextField("YYYY-MM-DD");  
+        horaField = new JTextField("HH:MM:SS");    
+        salaField = new JTextField();
+        guardarButton = new JButton("Guardar");
+
+        // Añadir los componentes 
+        add(new JLabel("ID Película:"));
+        add(idPeliculaField);
+        add(new JLabel("Fecha (YYYY-MM-DD):"));
+        add(fechaField);
+        add(new JLabel("Hora (HH:MM:SS):"));
+        add(horaField);
+        add(new JLabel("Sala:"));
+        add(salaField);
+        add(new JLabel("")); 
+        add(guardarButton);
+
+        // action listener para guardar 
+        guardarButton.addActionListener(e -> {
+            if (controlarCampos()) {
+                try {
+                    Funcion funcion = new Funcion(
+                            Integer.parseInt(idPeliculaField.getText()),
+                            Date.valueOf(fechaField.getText()),
+                            Time.valueOf(horaField.getText()),
+                            Integer.parseInt(salaField.getText())
+                    );
+
+                    //  guardar la función en el archivo
+                    FileManager.guardarFuncion(funcion, "funciones.txt");
+                    JOptionPane.showMessageDialog(this, "Funcion guardada para pelicula ocn id: " + funcion.getIdPelicula());
+                    dispose(); // cerrar ventana despues de guardar
+                } catch (IOException | IllegalArgumentException ex) {
+                    JOptionPane.showMessageDialog(this, "Error al guardar la funcion. Introduzca los datos correctamente");
+                }
+            }
+        });
+
+        // ajustar tamaño y visibilidad del diálogo
+        setSize(400, 250);
+        setLocationRelativeTo(null); // centrar en la pantalla
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE); //cerrar al pulsar la x
+    }
+    
+     // metodo para controlar que los datos se introduzcan correcttamente
+    private boolean controlarCampos() {
+        // Verificar que todos los campos están llenos
+        if (idPeliculaField.getText().isEmpty() || fechaField.getText().isEmpty() ||
+            horaField.getText().isEmpty() || salaField.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Por favor, complete todos los campos.");
+            return false;
+        }
+
+        // el id solo puede ser con numeros 
+        try {
+            Integer.parseInt(idPeliculaField.getText());
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "El id no puede contener letras");
+            return false;
+        }
+
+        // controlar que la fecha este en el formato 
+          try {
+            Date.valueOf(fechaField.getText()); 
+        } catch (IllegalArgumentException ex) {
+            JOptionPane.showMessageDialog(this, "La fecha debe estar en formato años, mes, díaí");
+            return false;
+        }
+
+        // controlar que la hora este en el forato
+        try {
+            Time.valueOf(horaField.getText()); 
+        } catch (IllegalArgumentException ex) {
+            JOptionPane.showMessageDialog(this, "La hora debe estar en formato HH:MM:SS.");
+            return false;
+        }
+
+        // controlar que la sala solo tenga numeros 
+        try {
+            Integer.parseInt(salaField.getText());
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "La sala debe ser un numero.");
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 400, Short.MAX_VALUE)
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 300, Short.MAX_VALUE)
+        );
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(FuncionDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(FuncionDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(FuncionDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(FuncionDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+
+        /* Create and display the dialog */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                FuncionDialog dialog = new FuncionDialog(new javax.swing.JFrame(), true);
+                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+                    @Override
+                    public void windowClosing(java.awt.event.WindowEvent e) {
+                        System.exit(0);
+                    }
+                });
+                dialog.setVisible(true);
+            }
+        });
+    }
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    // End of variables declaration//GEN-END:variables
+}

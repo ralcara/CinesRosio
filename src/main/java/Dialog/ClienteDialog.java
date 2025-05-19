@@ -4,8 +4,8 @@
  */
 package Dialog;
 
+import Modelos.FileManager;
 import Modelos.Cliente;
-import com.mycompany.cinesrosio.FileManager;
 import java.awt.GridLayout;
 import java.io.IOException;
 import javax.swing.JButton;
