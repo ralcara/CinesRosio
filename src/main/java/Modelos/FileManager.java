@@ -25,11 +25,11 @@ import java.util.List;
  * @author rocio
  */
 public class FileManager {
-
-    public static void guardarPeliculas(List<Pelicula> peliculas, String filename) throws IOException {
+ public static void guardarPeliculas(List<Pelicula> peliculas, String filename) throws IOException {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
             for (Pelicula p : peliculas) {
-                writer.write(p.getTitulo() + "," + p.getGenero() + "," + p.getDuracion() + "," + p.getClasificacion() + "," + p.getDirector());
+                writer.write(String.join(",", p.getTitulo(), p.getGenero(),
+                        String.valueOf(p.getDuracion()), p.getClasificacion(), p.getDirector()));
                 writer.newLine();
             }
         }
@@ -42,21 +42,24 @@ public class FileManager {
             while ((linea = reader.readLine()) != null) {
                 String[] partes = linea.split(",");
                 if (partes.length == 5) {
-                    peliculas.add(new Pelicula(partes[0], partes[1], Integer.parseInt(partes[2]), partes[3], partes[4]));
+                    peliculas.add(new Pelicula(partes[0], partes[1],
+                            Integer.parseInt(partes[2]), partes[3], partes[4]));
                 }
             }
         }
         return peliculas;
     }
-    // Guardar un cliente en el archivo
+
+    // --- CLIENTES ---
+
     public static void guardarCliente(Cliente cliente, String filename) throws IOException {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename, true))) {
-            writer.write(cliente.getNombre() + "," + cliente.getApellido() + "," + cliente.getEmail() + "," + cliente.getTelefono());
+            writer.write(String.join(",", cliente.getNombre(), cliente.getApellido(),
+                    cliente.getEmail(), cliente.getTelefono()));
             writer.newLine();
         }
     }
 
-    // Cargar clientes desde el archivo
     public static List<Cliente> cargarClientes(String filename) throws IOException {
         List<Cliente> clientes = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
@@ -71,15 +74,26 @@ public class FileManager {
         return clientes;
     }
 
-    // Guardar una funcion en el archivo
+    // --- FUNCIONES ---
+
+    public static void guardarFunciones(List<Funcion> funciones, String filename) throws IOException {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
+            for (Funcion funcion : funciones) {
+                writer.write(funcion.getIdPelicula() + "," + funcion.getFecha() + "," +
+                        funcion.getHora() + "," + funcion.getSala());
+                writer.newLine();
+            }
+        }
+    }
+
     public static void guardarFuncion(Funcion funcion, String filename) throws IOException {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename, true))) {
-            writer.write(funcion.getIdPelicula() + "," + funcion.getFecha() + "," + funcion.getHora() + "," + funcion.getSala());
+            writer.write(funcion.getIdPelicula() + "," + funcion.getFecha() + "," +
+                    funcion.getHora() + "," + funcion.getSala());
             writer.newLine();
         }
     }
 
-    // Cargar funciones desde el archivo
     public static List<Funcion> cargarFunciones(String filename) throws IOException {
         List<Funcion> funciones = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
@@ -87,27 +101,31 @@ public class FileManager {
             while ((linea = reader.readLine()) != null) {
                 String[] partes = linea.split(",");
                 if (partes.length == 4) {
-                    funciones.add(new Funcion(
-                            Integer.parseInt(partes[0]),
-                            Date.valueOf(partes[1]),
-                            Time.valueOf(partes[2]),
-                            Integer.parseInt(partes[3])
-                    ));
+                    try {
+                        int idPelicula = Integer.parseInt(partes[0]);
+                        Date fecha = Date.valueOf(partes[1]);
+                        Time hora = Time.valueOf(partes[2]);
+                        int sala = Integer.parseInt(partes[3]);
+                        funciones.add(new Funcion(idPelicula, fecha, hora, sala));
+                    } catch (IllegalArgumentException e) {
+                        System.err.println("Error al parsear línea: " + linea);
+                    }
                 }
             }
         }
         return funciones;
     }
 
-    // Guardar una reserva en el archivo
+    // --- RESERVAS ---
+
     public static void guardarReserva(Reserva reserva, String filename) throws IOException {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename, true))) {
-            writer.write(reserva.getIdFuncion() + "," + reserva.getIdCliente() + "," + reserva.getNumAsientos() + "," + reserva.getFechaReserva());
+            writer.write(reserva.getIdFuncion() + "," + reserva.getIdCliente() + "," +
+                    reserva.getNumAsientos() + "," + reserva.getFechaReserva());
             writer.newLine();
         }
     }
 
-    // Cargar reservas desde el archivo
     public static List<Reserva> cargarReservas(String filename) throws IOException {
         List<Reserva> reservas = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
@@ -115,16 +133,18 @@ public class FileManager {
             while ((linea = reader.readLine()) != null) {
                 String[] partes = linea.split(",");
                 if (partes.length == 4) {
-                    reservas.add(new Reserva(
-                            Integer.parseInt(partes[0]),
-                            Integer.parseInt(partes[1]),
-                            Integer.parseInt(partes[2]),
-                            Date.valueOf(partes[3])
-                    ));
+                    try {
+                        int idFuncion = Integer.parseInt(partes[0]);
+                        int idCliente = Integer.parseInt(partes[1]);
+                        int numAsientos = Integer.parseInt(partes[2]);
+                        Date fechaReserva = Date.valueOf(partes[3]);
+                        reservas.add(new Reserva(idFuncion, idCliente, numAsientos, fechaReserva));
+                    } catch (IllegalArgumentException e) {
+                        System.err.println("Error en formato de reserva: " + linea);
+                    }
                 }
             }
         }
         return reservas;
     }
 }
-

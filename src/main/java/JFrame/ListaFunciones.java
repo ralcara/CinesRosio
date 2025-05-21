@@ -4,17 +4,64 @@
  */
 package JFrame;
 
+import Modelos.FileManager;
+import Modelos.Funcion;
+import java.io.IOException;
+import java.sql.Date;
+import java.sql.Time;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.DefaultListModel;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author rocio
  */
 public class ListaFunciones extends javax.swing.JFrame {
 
+    private DefaultListModel<String> modelFunciones;
+    private List<Funcion> listaFunciones;
+    private static final String ARCHIVO_FUNCIONES = "funciones.txt";
+
     /**
      * Creates new form ListaFunciones
      */
     public ListaFunciones() {
         initComponents();
+        setTitle("Lista de Funciones");
+        setLocationRelativeTo(null);
+        modelFunciones = new DefaultListModel<>();
+        Lista.setModel(modelFunciones);
+
+        cargarFuncionesDesdeArchivo();
+
+    }
+
+    private void cargarFuncionesDesdeArchivo() {
+        listaFunciones = new ArrayList<>();
+        modelFunciones.clear();
+
+        try {
+            listaFunciones = FileManager.cargarFunciones(ARCHIVO_FUNCIONES);
+            for (Funcion f : listaFunciones) {
+                modelFunciones.addElement(funcionToString(f));
+            }
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, "No se pudo cargar el archivo de funciones.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void guardarFuncionesEnArchivo() {
+        try {
+            FileManager.guardarFunciones(listaFunciones, ARCHIVO_FUNCIONES);
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, "No se pudo guardar en el archivo.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private String funcionToString(Funcion f) {
+        return f.getIdPelicula() + ", " + f.getFecha() + ", " + f.getHora() + ", Sala: " + f.getSala();
     }
 
     /**
@@ -26,21 +73,149 @@ public class ListaFunciones extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jScrollPane2 = new javax.swing.JScrollPane();
+        Lista = new javax.swing.JList<>();
+        Editar = new javax.swing.JButton();
+        Añadir = new javax.swing.JButton();
+        Eliminar = new javax.swing.JButton();
+        Salir = new javax.swing.JButton();
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        Lista.setModel(new javax.swing.AbstractListModel<String>() {
+            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            public int getSize() { return strings.length; }
+            public String getElementAt(int i) { return strings[i]; }
+        });
+        jScrollPane2.setViewportView(Lista);
+
+        Editar.setText("Editar");
+        Editar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                EditarActionPerformed(evt);
+            }
+        });
+
+        Añadir.setText("Añadir");
+        Añadir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                AñadirActionPerformed(evt);
+            }
+        });
+
+        Eliminar.setText("Eliminar");
+        Eliminar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                EliminarActionPerformed(evt);
+            }
+        });
+
+        Salir.setText("Salir");
+        Salir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                SalirActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 235, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 46, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(Editar, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(Añadir, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(Eliminar, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(Salir, javax.swing.GroupLayout.Alignment.TRAILING))
+                .addGap(36, 36, 36))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addComponent(jScrollPane2)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(30, 30, 30)
+                .addComponent(Editar)
+                .addGap(18, 18, 18)
+                .addComponent(Eliminar)
+                .addGap(18, 18, 18)
+                .addComponent(Añadir)
+                .addGap(18, 18, 18)
+                .addComponent(Salir)
+                .addContainerGap(120, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void EditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EditarActionPerformed
+        // TODO add your handling code here
+        int selectedIndex = Lista.getSelectedIndex();
+        if (selectedIndex != -1) {
+            Funcion f = listaFunciones.get(selectedIndex);
+            String nueva = JOptionPane.showInputDialog(this, "Editar función (ID,Fecha,Hora,Sala):", f.getIdPelicula() + "," + f.getFecha() + "," + f.getHora() + "," + f.getSala());
+            if (nueva != null && !nueva.trim().isEmpty()) {
+                try {
+                    String[] partes = nueva.split(",");
+                    Funcion nuevaFuncion = new Funcion(
+                            Integer.parseInt(partes[0].trim()),
+                            Date.valueOf(partes[1].trim()),
+                            Time.valueOf(partes[2].trim()),
+                            Integer.parseInt(partes[3].trim())
+                    );
+                    listaFunciones.set(selectedIndex, nuevaFuncion);
+                    modelFunciones.setElementAt(funcionToString(nuevaFuncion), selectedIndex);
+                    guardarFuncionesEnArchivo();
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(this, "Formato incorrecto. Use ID,Fecha,Hora,Sala", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Seleccione una función para editar.");
+        }
+
+
+    }//GEN-LAST:event_EditarActionPerformed
+
+    private void EliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EliminarActionPerformed
+        // TODO add your handling code here:
+        int selectedIndex = Lista.getSelectedIndex();
+        if (selectedIndex != -1) {
+            listaFunciones.remove(selectedIndex);
+            modelFunciones.remove(selectedIndex);
+            guardarFuncionesEnArchivo();
+        } else {
+            JOptionPane.showMessageDialog(this, "Seleccione una función para eliminar.");
+        }
+
+    }//GEN-LAST:event_EliminarActionPerformed
+
+    private void SalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SalirActionPerformed
+        // TODO add your handling code here:
+        dispose();
+    }//GEN-LAST:event_SalirActionPerformed
+
+    private void AñadirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AñadirActionPerformed
+        // TODO add your handling code here:
+        String nueva = JOptionPane.showInputDialog(this, "Nueva función (ID,Fecha,Hora,Sala):");
+        if (nueva != null && !nueva.trim().isEmpty()) {
+            try {
+                String[] partes = nueva.split(",");
+                Funcion nuevaFuncion = new Funcion(
+                        Integer.parseInt(partes[0].trim()),
+                        Date.valueOf(partes[1].trim()),
+                        Time.valueOf(partes[2].trim()),
+                        Integer.parseInt(partes[3].trim())
+                );
+                listaFunciones.add(nuevaFuncion);
+                modelFunciones.addElement(funcionToString(nuevaFuncion));
+                guardarFuncionesEnArchivo();
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Formato incorrecto. Use ID,Fecha,Hora,Sala", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }//GEN-LAST:event_AñadirActionPerformed
 
     /**
      * @param args the command line arguments
@@ -78,5 +253,11 @@ public class ListaFunciones extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton Añadir;
+    private javax.swing.JButton Editar;
+    private javax.swing.JButton Eliminar;
+    private javax.swing.JList<String> Lista;
+    private javax.swing.JButton Salir;
+    private javax.swing.JScrollPane jScrollPane2;
     // End of variables declaration//GEN-END:variables
 }

@@ -185,7 +185,7 @@ public class ReservaDialog extends javax.swing.JDialog {
 
     private void SalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SalirActionPerformed
         // TODO add your handling code here:
-        System.exit(0);
+       dispose();
     }//GEN-LAST:event_SalirActionPerformed
 
     /**
