@@ -15,6 +15,7 @@ import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.Date;
 import java.sql.Time;
 import java.util.ArrayList;
@@ -25,32 +26,36 @@ import java.util.List;
  * @author rocio
  */
 public class FileManager {
- public static void guardarPeliculas(List<Pelicula> peliculas, String filename) throws IOException {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
-            for (Pelicula p : peliculas) {
-                writer.write(String.join(",", p.getTitulo(), p.getGenero(),
-                        String.valueOf(p.getDuracion()), p.getClasificacion(), p.getDirector()));
-                writer.newLine();
+ public static void guardarPeliculas(String nombreArchivo, List<Pelicula> peliculas) throws IOException {
+    try (BufferedWriter writer = new BufferedWriter(new FileWriter(nombreArchivo))) {
+        for (Pelicula p : peliculas) {
+            writer.write(p.getTitulo() + "," + p.getGenero() + "," + p.getDuracion() + "," + p.getClasificacion() + "," + p.getDirector());
+            writer.newLine();
+        }
+    }
+}
+    public static ArrayList<Pelicula> cargarPeliculas(String nombreArchivo) throws IOException {
+    ArrayList<Pelicula> peliculas = new ArrayList<>();
+
+    try (BufferedReader reader = new BufferedReader(new FileReader(nombreArchivo))) {
+        String linea;
+        while ((linea = reader.readLine()) != null) {
+            String[] partes = linea.split(",");
+            if (partes.length == 5) {
+                Pelicula pelicula = new Pelicula(
+                    partes[0].trim(),
+                    partes[1].trim(),
+                    Integer.parseInt(partes[2].trim()),
+                    partes[3].trim(),
+                    partes[4].trim()
+                );
+                peliculas.add(pelicula);
             }
         }
     }
 
-    public static List<Pelicula> cargarPeliculas(String filename) throws IOException {
-        List<Pelicula> peliculas = new ArrayList<>();
-        try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
-            String linea;
-            while ((linea = reader.readLine()) != null) {
-                String[] partes = linea.split(",");
-                if (partes.length == 5) {
-                    peliculas.add(new Pelicula(partes[0], partes[1],
-                            Integer.parseInt(partes[2]), partes[3], partes[4]));
-                }
-            }
-        }
-        return peliculas;
-    }
-
-    // --- CLIENTES ---
+    return peliculas;
+}
 
     public static void guardarCliente(Cliente cliente, String filename) throws IOException {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename, true))) {
@@ -73,8 +78,6 @@ public class FileManager {
         }
         return clientes;
     }
-
-    // --- FUNCIONES ---
 
     public static void guardarFunciones(List<Funcion> funciones, String filename) throws IOException {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
@@ -115,8 +118,6 @@ public class FileManager {
         }
         return funciones;
     }
-
-    // --- RESERVAS ---
 
     public static void guardarReserva(Reserva reserva, String filename) throws IOException {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename, true))) {

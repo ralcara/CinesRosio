@@ -4,17 +4,39 @@
  */
 package JFrame;
 
+import Modelos.FileManager;
+import Modelos.Pelicula;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.DefaultListModel;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author rocio
  */
 public class ListaPeliculas extends javax.swing.JFrame {
 
+    private DefaultListModel<String> modelPeliculas;
+    private ArrayList<Pelicula> peliculas;
+
     /**
      * Creates new form ListaPeliculas
      */
-    public ListaPeliculas() {
-        initComponents();
+    public ListaPeliculas() throws IOException {
+         initComponents();
+        setTitle("Lista de Películas");
+        setLocationRelativeTo(null);
+
+        modelPeliculas = new DefaultListModel<>();
+        jList1.setModel(modelPeliculas);
+
+        // Cargar películas desde archivo
+        peliculas = FileManager.cargarPeliculas("Peliculas.txt");
+        peliculas.forEach(p -> modelPeliculas.addElement(p.getTitulo()));
     }
 
     /**
@@ -26,21 +48,141 @@ public class ListaPeliculas extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jList1 = new javax.swing.JList<>();
+        Editar = new javax.swing.JButton();
+        Eliminar = new javax.swing.JButton();
+        Añadir = new javax.swing.JButton();
+        Salir = new javax.swing.JButton();
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        jList1.setModel(new javax.swing.AbstractListModel<String>() {
+            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            public int getSize() { return strings.length; }
+            public String getElementAt(int i) { return strings[i]; }
+        });
+        jScrollPane1.setViewportView(jList1);
+
+        Editar.setText("Editar");
+        Editar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                EditarActionPerformed(evt);
+            }
+        });
+
+        Eliminar.setText("Eliminar");
+        Eliminar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                EliminarActionPerformed(evt);
+            }
+        });
+
+        Añadir.setText("Añadir");
+        Añadir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                AñadirActionPerformed(evt);
+            }
+        });
+
+        Salir.setText("Salir");
+        Salir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                SalirActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 72, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(Editar)
+                    .addComponent(Eliminar)
+                    .addComponent(Añadir)
+                    .addComponent(Salir))
+                .addGap(25, 25, 25))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addComponent(jScrollPane1)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(23, 23, 23)
+                .addComponent(Editar)
+                .addGap(18, 18, 18)
+                .addComponent(Eliminar)
+                .addGap(18, 18, 18)
+                .addComponent(Añadir)
+                .addGap(35, 35, 35)
+                .addComponent(Salir)
+                .addContainerGap(110, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void EditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EditarActionPerformed
+        // TODO add your handling code here:
+        int index = jList1.getSelectedIndex();
+if (index != -1) {
+    Pelicula actual = peliculas.get(index);
+    String editado = JOptionPane.showInputDialog(this, "Editar nombre de la película:", actual.getTitulo());
+    if (editado != null && !editado.trim().isEmpty()) {
+        actual.setTitulo(editado);
+        modelPeliculas.setElementAt(editado, index);
+        try {
+            FileManager.guardarPeliculas("Peliculas.txt", peliculas);
+        } catch (IOException ex) {
+            Logger.getLogger(ListaPeliculas.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+} else {
+    JOptionPane.showMessageDialog(this, "Seleccione una película para editar.");
+}
+    }//GEN-LAST:event_EditarActionPerformed
+
+    private void EliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EliminarActionPerformed
+        // TODO add your handling code here:
+        int index = jList1.getSelectedIndex();
+if (index != -1) {
+    int confirm = JOptionPane.showConfirmDialog(this, "¿Eliminar la película seleccionada?", "Confirmar", JOptionPane.YES_NO_OPTION);
+    if (confirm == JOptionPane.YES_OPTION) {
+        modelPeliculas.remove(index);
+        peliculas.remove(index);
+        try {
+            FileManager.guardarPeliculas("Peliculas.txt", peliculas);
+        } catch (IOException ex) {
+            Logger.getLogger(ListaPeliculas.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+} else {
+    JOptionPane.showMessageDialog(this, "Seleccione una película para eliminar.");
+}
+    }//GEN-LAST:event_EliminarActionPerformed
+
+    private void AñadirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AñadirActionPerformed
+        // TODO add your handling code here:
+       String nuevoTitulo = JOptionPane.showInputDialog(this, "Ingrese el nombre de la nueva película:");
+if (nuevoTitulo != null && !nuevoTitulo.trim().isEmpty()) {
+    Pelicula nueva = new Pelicula(nuevoTitulo, "Desconocido", 120, "A", "Director");
+    peliculas.add(nueva);
+    modelPeliculas.addElement(nuevoTitulo);
+           try {
+               FileManager.guardarPeliculas("Peliculas.txt", peliculas);
+           } catch (IOException ex) {
+               Logger.getLogger(ListaPeliculas.class.getName()).log(Level.SEVERE, null, ex);
+           }
+}
+    }//GEN-LAST:event_AñadirActionPerformed
+
+    private void SalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SalirActionPerformed
+        // TODO add your handling code here:
+        dispose();
+
+    }//GEN-LAST:event_SalirActionPerformed
 
     /**
      * @param args the command line arguments
@@ -72,11 +214,21 @@ public class ListaPeliculas extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new ListaPeliculas().setVisible(true);
+                try {
+                    new ListaPeliculas().setVisible(true);
+                } catch (IOException ex) {
+                    Logger.getLogger(ListaPeliculas.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton Añadir;
+    private javax.swing.JButton Editar;
+    private javax.swing.JButton Eliminar;
+    private javax.swing.JButton Salir;
+    private javax.swing.JList<String> jList1;
+    private javax.swing.JScrollPane jScrollPane1;
     // End of variables declaration//GEN-END:variables
 }
