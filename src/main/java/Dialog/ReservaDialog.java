@@ -20,118 +20,64 @@ import javax.swing.JTextField;
  */
 public class ReservaDialog extends javax.swing.JDialog {
 
-    
-    private JTextField idFuncionField;
-    private JTextField idClienteField;
-    private JTextField numAsientosField;
-    private JTextField fechaReservaField;
-    private JButton guardarButton;
-    private JButton salirButton;
-
     /**
      * Creates new form FormularioForm
      */
     public ReservaDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
-        initCustomComponents();
-    }
-
-    private void initCustomComponents() {
-        setTitle("Registrar Reserva");
-        setSize(400, 250);  // Tamaño del JDialog
         setLocationRelativeTo(null);  // Centrar la ventana
-        setLayout(new GridLayout(5, 2)); // con 5 filas y 2 columnas
-
-        // Crear los campos y botones
-        idFuncionField = new JTextField();
-        idClienteField = new JTextField();
-        numAsientosField = new JTextField();
-        fechaReservaField = new JTextField("YYYY-MM-DD"); 
-        guardarButton = new JButton("Guardar");
-        salirButton = new JButton("Salir");
-
-        // Añadir los componentes
-        add(new JLabel("ID Función:"));
-        add(idFuncionField);
-
-        add(new JLabel("ID Cliente:"));
-        add(idClienteField);
-
-        add(new JLabel("Número de Asientos:"));
-        add(numAsientosField);
-
-        add(new JLabel("Fecha Reserva (YYYY-MM-DD):"));
-        add(fechaReservaField);
-
-        add(new JLabel());  
-        add(guardarButton);  
-        
-        add(new JLabel());  
-        add(salirButton);   // Boton de salir
-        
-        guardarButton.addActionListener(this::guardarReserva);
-        salirButton.addActionListener(this::salirFormulario);
+        setTitle("Registrar Reserva");
     }
 
-    private void guardarReserva(ActionEvent e) {
-        try {
-          // contorlar que los datos sean correctos 
-            int idFuncion = Integer.parseInt(idFuncionField.getText());
-            int idCliente = Integer.parseInt(idClienteField.getText());
-            int numAsientos = Integer.parseInt(numAsientosField.getText());
-            Date fechaReserva = Date.valueOf(fechaReservaField.getText());
-
-            // Crear la reserva
-            Reserva reserva = new Reserva(idFuncion, idCliente, numAsientos, fechaReserva);
-
-            // Guardar la reserva
-            FileManager.guardarReserva(reserva, "reservas.txt");
-            JOptionPane.showMessageDialog(this, "Reserva guardada ");
-            dispose();  // cierro ventana después de pulsarr x
-        } catch (Exception ex) {
-            // Mostrar mensaje de error 
-            JOptionPane.showMessageDialog(this, "Error al guardar la reserva");
-        }
-    }
-
-    private void salirFormulario(ActionEvent e) {
-        dispose();  // Cerrar el formulario y volver a la ventana anterior
-    }
-
-    // controlar los datos antes de guardar
     private boolean controlarCampos() {
-        // controlar que todos los huecos esten llenos
-        if (idFuncionField.getText().isEmpty() || idClienteField.getText().isEmpty() || numAsientosField.getText().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Todos los campos deben estar rellenos");
+        if (IdCliente.getText().isEmpty() || Idpelicula.getText().isEmpty() || NumAsiento.getText().isEmpty() || FechaReserva.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Todos los campos deben estar rellenos.");
             return false;
         }
 
-        // controlar que el id sean numeros
         try {
-            Integer.parseInt(idFuncionField.getText());
+            Integer.parseInt(Idpelicula.getText());
         } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "El id de funcion no puede contener letras.");
+            JOptionPane.showMessageDialog(this, "El ID de película debe ser numérico.");
             return false;
         }
 
-        // controlar que el numero de asiento sea un numero
         try {
-            Integer.parseInt(numAsientosField.getText());
+            Integer.parseInt(NumAsiento.getText());
         } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "El numero de asientos no puede contener letras.");
+            JOptionPane.showMessageDialog(this, "El número de asientos debe ser numérico.");
             return false;
         }
 
-        // contorlar que la fecha sea en el formato correcto (YYYY-MM-DD)
         try {
-            Date.valueOf(fechaReservaField.getText());  
+            Date.valueOf(FechaReserva.getText());
         } catch (IllegalArgumentException ex) {
-            JOptionPane.showMessageDialog(this, "La fecha debe estar en el formato año, mes y día.");
+            JOptionPane.showMessageDialog(this, "La fecha debe tener el formato YYYY-MM-DD.");
             return false;
         }
 
         return true;
+    }
+
+    private void guardarReserva() {
+        if (!controlarCampos()) {
+            return;
+        }
+
+        try {
+            int idFuncion = Integer.parseInt(Idpelicula.getText());
+            int idCliente = Integer.parseInt(IdCliente.getText());
+            int numAsientos = Integer.parseInt(NumAsiento.getText());
+            Date fechaReserva = Date.valueOf(FechaReserva.getText());
+
+            Reserva reserva = new Reserva(idFuncion, idCliente, numAsientos, fechaReserva);
+            FileManager.guardarReserva(reserva, "reservas.txt");
+            JOptionPane.showMessageDialog(this, "Reserva guardada correctamente.");
+            dispose();
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Error al guardar la reserva: " + ex.getMessage());
+        }
     }
 
     /**
@@ -143,21 +89,104 @@ public class ReservaDialog extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        Salir = new javax.swing.JButton();
+        Guardar = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        IdCliente = new javax.swing.JTextField();
+        Idpelicula = new javax.swing.JTextField();
+        NumAsiento = new javax.swing.JTextField();
+        FechaReserva = new javax.swing.JTextField();
+
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+
+        Salir.setText("Salir");
+        Salir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                SalirActionPerformed(evt);
+            }
+        });
+
+        Guardar.setText("Guardar");
+        Guardar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                GuardarActionPerformed(evt);
+            }
+        });
+
+        jLabel1.setText("ID Cliente");
+
+        jLabel2.setText("ID pelicula");
+
+        jLabel3.setText("Numero Asiento");
+
+        jLabel4.setText("Fecha Reserva");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(57, 57, 57)
+                .addComponent(Guardar)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(Salir)
+                .addGap(63, 63, 63))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(40, 40, 40)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel1)
+                    .addComponent(jLabel2)
+                    .addComponent(jLabel3)
+                    .addComponent(jLabel4))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 98, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(IdCliente, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(Idpelicula, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(NumAsiento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(FechaReserva, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(94, 94, 94))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(39, 39, 39)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(IdCliente, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(22, 22, 22)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(Idpelicula, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(22, 22, 22)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(NumAsiento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(22, 22, 22)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4)
+                    .addComponent(FechaReserva, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 45, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(Guardar)
+                    .addComponent(Salir))
+                .addGap(30, 30, 30))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void GuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GuardarActionPerformed
+        // TODO add your handling code here:
+        guardarReserva();
+    }//GEN-LAST:event_GuardarActionPerformed
+
+    private void SalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SalirActionPerformed
+        // TODO add your handling code here:
+        System.exit(0);
+    }//GEN-LAST:event_SalirActionPerformed
 
     /**
      * @param args the command line arguments
@@ -202,5 +231,15 @@ public class ReservaDialog extends javax.swing.JDialog {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextField FechaReserva;
+    private javax.swing.JButton Guardar;
+    private javax.swing.JTextField IdCliente;
+    private javax.swing.JTextField Idpelicula;
+    private javax.swing.JTextField NumAsiento;
+    private javax.swing.JButton Salir;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     // End of variables declaration//GEN-END:variables
 }

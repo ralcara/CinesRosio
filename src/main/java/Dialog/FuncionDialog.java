@@ -22,114 +22,45 @@ import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
  */
 public class FuncionDialog extends javax.swing.JDialog {
 
-   
-    private JTextField idPeliculaField;
-    private JTextField fechaField;
-    private JTextField horaField;
-    private JTextField salaField;
-    private JButton guardarButton;
-
     /**
      * Creates new form FuncionDialog
      */
     public FuncionDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
-        initCustomComponents();
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     }
 
-
-    private void initCustomComponents() {
-       
-        setLayout(new GridLayout(6, 2, 10, 10)); // 6 filas 2 columns y espacio de 10 entre componentes
-
-        // Crear los campos de texto
-        idPeliculaField = new JTextField();
-        fechaField = new JTextField("YYYY-MM-DD");  
-        horaField = new JTextField("HH:MM:SS");    
-        salaField = new JTextField();
-        guardarButton = new JButton("Guardar");
-
-        // Añadir los componentes 
-        add(new JLabel("ID Película:"));
-        add(idPeliculaField);
-        add(new JLabel("Fecha (YYYY-MM-DD):"));
-        add(fechaField);
-        add(new JLabel("Hora (HH:MM:SS):"));
-        add(horaField);
-        add(new JLabel("Sala:"));
-        add(salaField);
-        add(new JLabel("")); 
-        add(guardarButton);
-
-        // action listener para guardar 
-        guardarButton.addActionListener(e -> {
-            if (controlarCampos()) {
-                try {
-                    Funcion funcion = new Funcion(
-                            Integer.parseInt(idPeliculaField.getText()),
-                            Date.valueOf(fechaField.getText()),
-                            Time.valueOf(horaField.getText()),
-                            Integer.parseInt(salaField.getText())
-                    );
-
-                    //  guardar la función en el archivo
-                    FileManager.guardarFuncion(funcion, "funciones.txt");
-                    JOptionPane.showMessageDialog(this, "Funcion guardada para pelicula ocn id: " + funcion.getIdPelicula());
-                    dispose(); // cerrar ventana despues de guardar
-                } catch (IOException | IllegalArgumentException ex) {
-                    JOptionPane.showMessageDialog(this, "Error al guardar la funcion. Introduzca los datos correctamente");
-                }
-            }
-        });
-
-        // ajustar tamaño y visibilidad del diálogo
-        setSize(400, 250);
-        setLocationRelativeTo(null); // centrar en la pantalla
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE); //cerrar al pulsar la x
-    }
-    
-     // metodo para controlar que los datos se introduzcan correcttamente
     private boolean controlarCampos() {
-        // Verificar que todos los campos están llenos
-        if (idPeliculaField.getText().isEmpty() || fechaField.getText().isEmpty() ||
-            horaField.getText().isEmpty() || salaField.getText().isEmpty()) {
+        if (ID.getText().isEmpty() || Fecha.getText().isEmpty() || Hora.getText().isEmpty() || Sala.getText().isEmpty()) {
             JOptionPane.showMessageDialog(this, "Por favor, complete todos los campos.");
             return false;
         }
-
-        // el id solo puede ser con numeros 
         try {
-            Integer.parseInt(idPeliculaField.getText());
-        } catch (NumberFormatException ex) {
+            Integer.parseInt(ID.getText());
+        } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(this, "El id no puede contener letras");
             return false;
         }
-
-        // controlar que la fecha este en el formato 
-          try {
-            Date.valueOf(fechaField.getText()); 
-        } catch (IllegalArgumentException ex) {
-            JOptionPane.showMessageDialog(this, "La fecha debe estar en formato años, mes, díaí");
-            return false;
-        }
-
-        // controlar que la hora este en el forato
         try {
-            Time.valueOf(horaField.getText()); 
-        } catch (IllegalArgumentException ex) {
-            JOptionPane.showMessageDialog(this, "La hora debe estar en formato HH:MM:SS.");
+            Date.valueOf(Fecha.getText());
+        } catch (IllegalArgumentException e) {
+            JOptionPane.showMessageDialog(this, "La fecha debe estar en formato YYYY-MM-DD");
             return false;
         }
-
-        // controlar que la sala solo tenga numeros 
         try {
-            Integer.parseInt(salaField.getText());
-        } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "La sala debe ser un numero.");
+            Time.valueOf(Hora.getText());
+        } catch (IllegalArgumentException e) {
+            JOptionPane.showMessageDialog(this, "La hora debe estar en formato HH:MM:SS");
             return false;
         }
-
+        try {
+            Integer.parseInt(Sala.getText());
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "La sala debe ser un número.");
+            return false;
+        }
         return true;
     }
 
@@ -142,21 +73,166 @@ public class FuncionDialog extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        ID = new javax.swing.JTextField();
+        Fecha = new javax.swing.JTextField();
+        Hora = new javax.swing.JTextField();
+        Sala = new javax.swing.JTextField();
+        jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
+
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+
+        jLabel1.setText("ID");
+
+        jLabel2.setText("Fecha");
+
+        jLabel3.setText("Hora");
+
+        jLabel4.setText("Sala");
+
+        ID.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                IDActionPerformed(evt);
+            }
+        });
+
+        Fecha.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                FechaActionPerformed(evt);
+            }
+        });
+
+        Hora.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                HoraActionPerformed(evt);
+            }
+        });
+
+        Sala.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                SalaActionPerformed(evt);
+            }
+        });
+
+        jButton1.setText("Guardar");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
+        jButton2.setText("Salir");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(38, 38, 38)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel4)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(Sala, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(ID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(Hora, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(0, 21, Short.MAX_VALUE)
+                        .addComponent(jLabel2)
+                        .addGap(106, 106, 106)
+                        .addComponent(Fecha, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(130, 130, 130))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(77, 77, 77)
+                .addComponent(jButton1)
+                .addGap(68, 68, 68)
+                .addComponent(jButton2)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(33, 33, 33)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(ID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(37, 37, 37)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(Fecha, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(44, 44, 44)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(Hora, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(24, 24, 24)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4)
+                    .addComponent(Sala, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton1)
+                    .addComponent(jButton2))
+                .addContainerGap(48, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void FechaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_FechaActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_FechaActionPerformed
+
+    private void IDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_IDActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_IDActionPerformed
+
+    private void HoraActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_HoraActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_HoraActionPerformed
+
+    private void SalaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SalaActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_SalaActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        if (controlarCampos()) {
+            try {
+                Funcion funcion = new Funcion(
+                        Integer.parseInt(ID.getText()),
+                        Date.valueOf(Fecha.getText()),
+                        Time.valueOf(Hora.getText()),
+                        Integer.parseInt(Sala.getText())
+                );
+                FileManager.guardarFuncion(funcion, "funciones.txt");
+                JOptionPane.showMessageDialog(this, "Función guardada para película con id: " + funcion.getIdPelicula());
+                dispose();
+            } catch (IOException | IllegalArgumentException ex) {
+                JOptionPane.showMessageDialog(this, "Error al guardar la función. Introduzca los datos correctamente");
+            }
+        }
+
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // TODO add your handling code here:
+        System.exit(0);
+    }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -200,6 +276,18 @@ public class FuncionDialog extends javax.swing.JDialog {
         });
     }
 
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextField Fecha;
+    private javax.swing.JTextField Hora;
+    private javax.swing.JTextField ID;
+    private javax.swing.JTextField Sala;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     // End of variables declaration//GEN-END:variables
+
 }

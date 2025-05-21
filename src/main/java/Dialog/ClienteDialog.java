@@ -1,9 +1,9 @@
+package Dialog;
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JDialog.java to edit this template
  */
-package Dialog;
-
 import Modelos.FileManager;
 import Modelos.Cliente;
 import java.awt.GridLayout;
@@ -23,98 +23,12 @@ public class ClienteDialog extends javax.swing.JDialog {
     /**
      * Creates new form ClienteDialog
      */
-     public ClienteDialog(java.awt.Frame parent, boolean modal) {
+    public ClienteDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
-        inicializarComponentes(); 
-     }
-     
-     
-    private void inicializarComponentes() {
-        // Configuro el titulo de la ventana
         setTitle("Registrar Cliente - CinesRosio");
-        setSize(400, 250); // Tamaño de la ventana
-        setLocationRelativeTo(null); // Centro la ventana en la pantalla
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE); // cierro la ventana si le doy al boton
-
-        // Establecer un GridLayout de 6 filas y 2 columnas
-        setLayout(new GridLayout(6, 2));
-
-        // Creo los componentes
-        JLabel nombreLabel = new JLabel("Nombre:");
-        JTextField nombreField = new JTextField();
-
-        JLabel apellidoLabel = new JLabel("Apellido:");
-        JTextField apellidoField = new JTextField();
-
-        JLabel emailLabel = new JLabel("Email:");
-        JTextField emailField = new JTextField();
-
-        JLabel telefonoLabel = new JLabel("Teléfono:");
-        JTextField telefonoField = new JTextField();
-
-        JButton guardarButton = new JButton("Guardar");
-
-        // Añado los componentes
-        add(nombreLabel);
-        add(nombreField);
-
-        add(apellidoLabel);
-        add(apellidoField);
-
-        add(emailLabel);
-        add(emailField);
-
-        add(telefonoLabel);
-        add(telefonoField);
-
-        add(new JLabel()); // añado espacio vacio
-        add(guardarButton); // Boton de guardar
-
-        guardarButton.addActionListener(e -> {
-    String nombre = nombreField.getText();
-    String apellido = apellidoField.getText();
-    String telefono = telefonoField.getText();
-    String email = emailField.getText();
-
-    // controlar que solo tenga letras
-    if (!nombre.matches("[a-zA-Z]+")) {
-        JOptionPane.showMessageDialog(null, "El nombre debe tener solo letras.");
-        return;
+        setLocationRelativeTo(null); // Centrar ventana
     }
-
-    // que el apellido solo tenga letras
-    if (!apellido.matches("[a-zA-Z]+")) {
-        JOptionPane.showMessageDialog(null, "El apellido debe tener solo letras.");
-        return;
-    }
-
-    // controlar que solo haya numeros en el telefono
-    if (!telefono.matches("[0-9]+")) {
-        JOptionPane.showMessageDialog(null, "El teléfono debe tener solo números.");
-        return;
-    }
-
-            // creo un cliente con los datos introdidos por el usu
-            Cliente cliente = new Cliente(
-                    nombreField.getText(),
-                    apellidoField.getText(),
-                    emailField.getText(),
-                    telefonoField.getText()
-            );
-
-            try {
-                // guardo el cliente en un archivo
-                FileManager.guardarCliente(cliente, "clientes.txt");
-                JOptionPane.showMessageDialog(this, "Cliente guardado: " + cliente.getNombre() + " " + cliente.getApellido());
-            } catch (IOException ex) {
-                JOptionPane.showMessageDialog(this, "Error al guardar el cliente.");
-            }
-        });
-
-        setVisible(true); // hago visible
-    }
-
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -125,21 +39,173 @@ public class ClienteDialog extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        nombre = new javax.swing.JTextField();
+        apellido = new javax.swing.JTextField();
+        email = new javax.swing.JTextField();
+        telefono = new javax.swing.JTextField();
+        Guardar = new javax.swing.JButton();
+        Salir = new javax.swing.JButton();
+
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+
+        jLabel1.setText("Nombre");
+
+        jLabel2.setText("Email");
+
+        jLabel3.setText("Apellido");
+
+        jLabel4.setText("Telefono");
+
+        nombre.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                nombreActionPerformed(evt);
+            }
+        });
+
+        apellido.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                apellidoActionPerformed(evt);
+            }
+        });
+
+        email.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                emailActionPerformed(evt);
+            }
+        });
+
+        telefono.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                telefonoActionPerformed(evt);
+            }
+        });
+
+        Guardar.setText("Guardar");
+        Guardar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                GuardarActionPerformed(evt);
+            }
+        });
+
+        Salir.setText("Salir");
+        Salir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                SalirActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(70, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING))
+                .addGap(146, 146, 146)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(nombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(apellido, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(email, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(telefono, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(64, 64, 64))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(85, 85, 85)
+                .addComponent(Guardar)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(Salir)
+                .addGap(53, 53, 53))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(38, 38, 38)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(nombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel1))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(apellido, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel3))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(email, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel2))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(telefono, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel4))
+                .addGap(41, 41, 41)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(Guardar)
+                    .addComponent(Salir))
+                .addGap(71, 71, 71))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void apellidoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_apellidoActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_apellidoActionPerformed
+
+    private void nombreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nombreActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_nombreActionPerformed
+
+    private void GuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GuardarActionPerformed
+        // TODO add your handling code here:
+        String nombreText = nombre.getText().trim();
+        String apellidoText = apellido.getText().trim();
+        String emailText = email.getText().trim();
+        String telefonoText = telefono.getText().trim();
+
+        if (!nombreText.matches("[a-zA-Z]+")) {
+            JOptionPane.showMessageDialog(this, "El nombre debe tener solo letras.");
+            return;
+        }
+
+        if (!apellidoText.matches("[a-zA-Z]+")) {
+            JOptionPane.showMessageDialog(this, "El apellido debe tener solo letras.");
+            return;
+        }
+
+        if (!telefonoText.matches("\\d+")) {
+            JOptionPane.showMessageDialog(this, "El teléfono debe tener solo números.");
+            return;
+        }
+
+        Cliente cliente = new Cliente(nombreText, apellidoText, emailText, telefonoText);
+        try {
+            FileManager.guardarCliente(cliente, "clientes.txt");
+            JOptionPane.showMessageDialog(this, "Cliente guardado: " + cliente.getNombre() + " " + cliente.getApellido());
+            dispose(); // Cierra la ventana después de guardar
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(this, "Error al guardar el cliente.");
+        }
+
+    }//GEN-LAST:event_GuardarActionPerformed
+
+    private void emailActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_emailActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_emailActionPerformed
+
+    private void telefonoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_telefonoActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_telefonoActionPerformed
+
+    private void SalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SalirActionPerformed
+        // TODO add your handling code here:
+        System.exit(0);
+
+    }//GEN-LAST:event_SalirActionPerformed
 
     /**
      * @param args the command line arguments
@@ -172,17 +238,21 @@ public class ClienteDialog extends javax.swing.JDialog {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 ClienteDialog dialog = new ClienteDialog(new javax.swing.JFrame(), true);
-                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                    @Override
-                    public void windowClosing(java.awt.event.WindowEvent e) {
-                        System.exit(0);
-                    }
-                });
                 dialog.setVisible(true);
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton Guardar;
+    private javax.swing.JButton Salir;
+    private javax.swing.JTextField apellido;
+    private javax.swing.JTextField email;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JTextField nombre;
+    private javax.swing.JTextField telefono;
     // End of variables declaration//GEN-END:variables
 }
