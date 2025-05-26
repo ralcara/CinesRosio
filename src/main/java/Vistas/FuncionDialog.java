@@ -4,11 +4,14 @@
  */
 package Vistas;
 
-
+import Controllers.FuncionController;
 import Modelos.Funcion;
+import Modelos.Pelicula;
 import java.io.IOException;
 import java.sql.Date;
 import java.sql.Time;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import javax.swing.JOptionPane;
 import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
 
@@ -18,47 +21,50 @@ import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
  */
 public class FuncionDialog extends javax.swing.JDialog {
 
+   private Funcion funcion;
+    private FuncionController funcionController;
+
     /**
      * Creates new form FuncionDialog
      */
-    public FuncionDialog(java.awt.Frame parent, boolean modal) {
-        super(parent, modal);
+    public FuncionDialog(java.awt.Frame parent, boolean modal, Funcion funcionExistente) {
+      super(parent, modal);
         initComponents();
         setLocationRelativeTo(null);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+
+        funcionController = new FuncionController();
+        this.funcion = funcionExistente;
+
+        if (funcion != null) {
+            setTitle("Editar Función");
+            ID.setText(String.valueOf(funcion.getPelicula().getIdPelicula()));
+            Fecha.setText(funcion.getFecha().toString());  // LocalDate a String
+            Hora.setText(funcion.getHora().toString());    // LocalTime a String
+            Sala.setText(String.valueOf(funcion.getSala()));
+            ID.setEnabled(false); // no permitir editar ID película
+        } else {
+            setTitle("Registrar Función");
+        }
     }
 
     private boolean controlarCampos() {
         if (ID.getText().isEmpty() || Fecha.getText().isEmpty() || Hora.getText().isEmpty() || Sala.getText().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Por favor, complete todos los campos.");
+            JOptionPane.showMessageDialog(this, "Todos los campos son obligatorios");
             return false;
         }
         try {
             Integer.parseInt(ID.getText());
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "El id no puede contener letras");
-            return false;
-        }
-        try {
-            Date.valueOf(Fecha.getText());
-        } catch (IllegalArgumentException e) {
-            JOptionPane.showMessageDialog(this, "La fecha debe estar en formato YYYY-MM-DD");
-            return false;
-        }
-        try {
-            Time.valueOf(Hora.getText());
-        } catch (IllegalArgumentException e) {
-            JOptionPane.showMessageDialog(this, "La hora debe estar en formato HH:MM:SS");
-            return false;
-        }
-        try {
+            LocalDate.parse(Fecha.getText());
+            LocalTime.parse(Hora.getText());
             Integer.parseInt(Sala.getText());
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "La sala debe ser un número.");
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Revise que los datos tengan el formato correcto");
             return false;
         }
         return true;
     }
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -77,7 +83,7 @@ public class FuncionDialog extends javax.swing.JDialog {
         Fecha = new javax.swing.JTextField();
         Hora = new javax.swing.JTextField();
         Sala = new javax.swing.JTextField();
-        jButton1 = new javax.swing.JButton();
+        Guardar = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -114,10 +120,10 @@ public class FuncionDialog extends javax.swing.JDialog {
             }
         });
 
-        jButton1.setText("Guardar");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        Guardar.setText("Guardar");
+        Guardar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                GuardarActionPerformed(evt);
             }
         });
 
@@ -155,7 +161,7 @@ public class FuncionDialog extends javax.swing.JDialog {
                 .addGap(130, 130, 130))
             .addGroup(layout.createSequentialGroup()
                 .addGap(77, 77, 77)
-                .addComponent(jButton1)
+                .addComponent(Guardar)
                 .addGap(68, 68, 68)
                 .addComponent(jButton2)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -181,7 +187,7 @@ public class FuncionDialog extends javax.swing.JDialog {
                     .addComponent(Sala, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
+                    .addComponent(Guardar)
                     .addComponent(jButton2))
                 .addContainerGap(48, Short.MAX_VALUE))
         );
@@ -205,25 +211,55 @@ public class FuncionDialog extends javax.swing.JDialog {
         // TODO add your handling code here:
     }//GEN-LAST:event_SalaActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void GuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GuardarActionPerformed
         // TODO add your handling code here:
-        if (controlarCampos()) {
-            try {
-                Funcion funcion = new Funcion(
-                        Integer.parseInt(ID.getText()),
-                        Date.valueOf(Fecha.getText()),
-                        Time.valueOf(Hora.getText()),
-                        Integer.parseInt(Sala.getText())
-                );
-                FileManager.guardarFuncion(funcion, "funciones.txt");
-                JOptionPane.showMessageDialog(this, "Función guardada para película con id: " + funcion.getIdPelicula());
-                dispose();
-            } catch (IOException | IllegalArgumentException ex) {
-                JOptionPane.showMessageDialog(this, "Error al guardar la función. Introduzca los datos correctamente");
-            }
+         if (!controlarCampos()) {
+            return;
         }
 
-    }//GEN-LAST:event_jButton1ActionPerformed
+        try {
+            int idPelicula = Integer.parseInt(ID.getText());
+            Pelicula pelicula = buscarPeliculaPorId(idPelicula);
+            if (pelicula == null) {
+                JOptionPane.showMessageDialog(this, "Película no encontrada con ID: " + idPelicula);
+                return;
+            }
+
+            LocalDate fecha = LocalDate.parse(Fecha.getText());
+            LocalTime hora = LocalTime.parse(Hora.getText());
+            int sala = Integer.parseInt(Sala.getText());
+
+            if (funcion == null) {
+                
+                funcion = new Funcion(fecha, pelicula, hora, sala);
+            } else {
+                funcion.setFecha(fecha);
+                funcion.setPelicula(pelicula);
+                funcion.setHora(hora);
+                funcion.setSala(sala);
+            }
+
+            if (funcion.getId_funcion() == 0) {
+                funcionController.crearFuncion(funcion);
+                JOptionPane.showMessageDialog(this, "Función creada con éxito");
+            } else {
+                funcionController.actualizarFuncion(funcion);
+                JOptionPane.showMessageDialog(this, "Función actualizada con éxito");
+            }
+
+            dispose();
+
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Error al guardar la función: " + ex.getMessage());
+        }
+    }
+
+    private Pelicula buscarPeliculaPorId(int id) {
+        // Aquí puedes usar un PeliculaController similar a FuncionController
+        // Para el ejemplo, retorna null o haz la consulta adecuada
+        return null; // <- Implementa según tu proyecto
+
+    }//GEN-LAST:event_GuardarActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
@@ -260,7 +296,7 @@ public class FuncionDialog extends javax.swing.JDialog {
         /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                FuncionDialog dialog = new FuncionDialog(new javax.swing.JFrame(), true);
+                FuncionDialog dialog = new FuncionDialog(new javax.swing.JFrame(), true, null);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     @Override
                     public void windowClosing(java.awt.event.WindowEvent e) {
@@ -275,10 +311,10 @@ public class FuncionDialog extends javax.swing.JDialog {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField Fecha;
+    private javax.swing.JButton Guardar;
     private javax.swing.JTextField Hora;
     private javax.swing.JTextField ID;
     private javax.swing.JTextField Sala;
-    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;

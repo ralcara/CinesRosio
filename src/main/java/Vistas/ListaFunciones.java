@@ -4,11 +4,15 @@
  */
 package Vistas;
 
-import Modelos.FileManager;
+import Controllers.FuncionController;
+
 import Modelos.Funcion;
-import java.io.IOException;
+import Modelos.Pelicula;
+
 import java.sql.Date;
 import java.sql.Time;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.DefaultListModel;
@@ -22,7 +26,7 @@ public class ListaFunciones extends javax.swing.JFrame {
 
     private DefaultListModel<String> modelFunciones;
     private List<Funcion> listaFunciones;
-    private static final String ARCHIVO_FUNCIONES = "funciones.txt";
+    private FuncionController funcionController;
 
     /**
      * Creates new form ListaFunciones
@@ -31,33 +35,30 @@ public class ListaFunciones extends javax.swing.JFrame {
         initComponents();
         setTitle("Lista de Funciones");
         setLocationRelativeTo(null);
+
+        funcionController = new FuncionController();
         modelFunciones = new DefaultListModel<>();
         Lista.setModel(modelFunciones);
 
-        cargarFuncionesDesdeArchivo();
-
+        cargarFuncionesDesdeBD();
     }
 
-    private void cargarFuncionesDesdeArchivo() {
-        listaFunciones = new ArrayList<>();
+    private void cargarFuncionesDesdeBD() {
         modelFunciones.clear();
+        listaFunciones = new ArrayList<>();
 
         try {
-            listaFunciones = FileManager.cargarFunciones(ARCHIVO_FUNCIONES);
+            listaFunciones = funcionController.listarFunciones();
             for (Funcion f : listaFunciones) {
                 modelFunciones.addElement(funcionToString(f));
             }
-        } catch (IOException e) {
-            JOptionPane.showMessageDialog(this, "No se pudo cargar el archivo de funciones.", "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error al cargar funciones desde la base de datos.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    private void guardarFuncionesEnArchivo() {
-        try {
-            FileManager.guardarFunciones(listaFunciones, ARCHIVO_FUNCIONES);
-        } catch (IOException e) {
-            JOptionPane.showMessageDialog(this, "No se pudo guardar en el archivo.", "Error", JOptionPane.ERROR_MESSAGE);
-        }
+    private void guardarCambios() {
+        cargarFuncionesDesdeBD();
     }
 
     private String funcionToString(Funcion f) {
@@ -154,21 +155,25 @@ public class ListaFunciones extends javax.swing.JFrame {
         int selectedIndex = Lista.getSelectedIndex();
         if (selectedIndex != -1) {
             Funcion f = listaFunciones.get(selectedIndex);
-            String nueva = JOptionPane.showInputDialog(this, "Editar función (ID,Fecha,Hora,Sala):", f.getIdPelicula() + "," + f.getFecha() + "," + f.getHora() + "," + f.getSala());
+            String nueva = JOptionPane.showInputDialog(this, "Editar función (ID,Fecha(YYYY-MM-DD),Hora(HH:mm:ss),Sala):",
+                    f.getIdPelicula() + "," + f.getFecha() + "," + f.getHora() + "," + f.getSala());
             if (nueva != null && !nueva.trim().isEmpty()) {
                 try {
                     String[] partes = nueva.split(",");
-                    Funcion nuevaFuncion = new Funcion(
-                            Integer.parseInt(partes[0].trim()),
-                            Date.valueOf(partes[1].trim()),
-                            Time.valueOf(partes[2].trim()),
-                            Integer.parseInt(partes[3].trim())
-                    );
-                    listaFunciones.set(selectedIndex, nuevaFuncion);
-                    modelFunciones.setElementAt(funcionToString(nuevaFuncion), selectedIndex);
-                    guardarFuncionesEnArchivo();
+                    if (partes.length != 4) {
+                        throw new IllegalArgumentException("Formato incorrecto");
+                    }
+
+                    f.setIdPelicula(Integer.parseInt(partes[0].trim()));
+                    f.setFecha(LocalDate.parse(partes[1].trim()));
+                    f.setHora(LocalTime.parse(partes[2].trim()));
+                    f.setSala(Integer.parseInt(partes[3].trim()));
+
+                    funcionController.actualizarFuncion(f);
+                    guardarCambios();
+
                 } catch (Exception e) {
-                    JOptionPane.showMessageDialog(this, "Formato incorrecto. Use ID,Fecha,Hora,Sala", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Formato incorrecto. Use ID,Fecha,Hora,Sala\nEjemplo: 1,2025-05-26,18:30:00,3", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         } else {
@@ -182,12 +187,18 @@ public class ListaFunciones extends javax.swing.JFrame {
         // TODO add your handling code here:
         int selectedIndex = Lista.getSelectedIndex();
         if (selectedIndex != -1) {
-            listaFunciones.remove(selectedIndex);
-            modelFunciones.remove(selectedIndex);
-            guardarFuncionesEnArchivo();
+            Funcion f = listaFunciones.get(selectedIndex);
+            try {
+                int idPelicula = Integer.parseInt(f.getIdPelicula());
+                funcionController.eliminarFuncion(idPelicula);
+                guardarCambios();
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Error al eliminar la función.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
         } else {
             JOptionPane.showMessageDialog(this, "Seleccione una función para eliminar.");
         }
+
 
     }//GEN-LAST:event_EliminarActionPerformed
 
@@ -198,23 +209,33 @@ public class ListaFunciones extends javax.swing.JFrame {
 
     private void AñadirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AñadirActionPerformed
         // TODO add your handling code here:
-        String nueva = JOptionPane.showInputDialog(this, "Nueva función (ID,Fecha,Hora,Sala):");
-        if (nueva != null && !nueva.trim().isEmpty()) {
-            try {
-                String[] partes = nueva.split(",");
-                Funcion nuevaFuncion = new Funcion(
-                        Integer.parseInt(partes[0].trim()),
-                        Date.valueOf(partes[1].trim()),
-                        Time.valueOf(partes[2].trim()),
-                        Integer.parseInt(partes[3].trim())
-                );
-                listaFunciones.add(nuevaFuncion);
-                modelFunciones.addElement(funcionToString(nuevaFuncion));
-                guardarFuncionesEnArchivo();
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(this, "Formato incorrecto. Use ID,Fecha,Hora,Sala", "Error", JOptionPane.ERROR_MESSAGE);
+         String nueva = JOptionPane.showInputDialog(this, "Nueva función (ID_Pelicula,Fecha(YYYY-MM-DD),Hora(HH:mm:ss),Sala):");
+    if (nueva != null && !nueva.trim().isEmpty()) {
+        try {
+            String[] partes = nueva.split(",");
+            if (partes.length != 4) {
+                throw new IllegalArgumentException("Formato incorrecto");
             }
+
+            int idPelicula = Integer.parseInt(partes[0].trim());
+            LocalDate fecha = LocalDate.parse(partes[1].trim());
+            LocalTime hora = LocalTime.parse(partes[2].trim());
+            int sala = Integer.parseInt(partes[3].trim());
+
+            Pelicula pelicula = new Pelicula();
+            pelicula.setIdPelicula(idPelicula);
+
+            Funcion nuevaFuncion = new Funcion(fecha, pelicula, hora, sala);
+
+            funcionController.crearFuncion(nuevaFuncion);
+            guardarCambios();
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Formato incorrecto. Use ID_Pelicula,Fecha,Hora,Sala", "Error", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+
     }//GEN-LAST:event_AñadirActionPerformed
 
     /**

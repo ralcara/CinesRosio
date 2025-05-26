@@ -5,6 +5,8 @@
 package Modelos;
 
 import jakarta.persistence.*;
+import java.sql.Date;
+import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -30,8 +32,10 @@ public class Funcion {
     @OneToMany(mappedBy = "funcion", cascade = CascadeType.ALL)
     private List<Reserva> reservas;
 
-    public Funcion() {
+    public Funcion(LocalDate fecha1, Pelicula pelicula1, LocalTime hora1, int sala1) {
     }
+
+    
 
     public Funcion(int id_funcion, Pelicula pelicula, LocalDate fecha, LocalTime hora, int sala, List<Reserva> reservas) {
         this.id_funcion = id_funcion;
@@ -89,6 +93,14 @@ public class Funcion {
 
     public void setReservas(List<Reserva> reservas) {
         this.reservas = reservas;
+    }
+
+    public String getIdPelicula() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    public void setIdPelicula(int parseInt) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
    

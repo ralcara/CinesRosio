@@ -6,12 +6,14 @@ package Controllers;
 
 import Modelos.Funcion;
 import jakarta.persistence.EntityManager;
+import java.util.List;
 
 /**
  *
  * @author rocio
  */
 public class FuncionController {
+ 
     public void crearFuncion(Funcion funcion) {
         EntityManager em = JPA.getEntityManager();
         try {
@@ -56,5 +58,13 @@ public class FuncionController {
             em.close();
         }
     }
-}
 
+    public List<Funcion> listarFunciones() {
+        EntityManager em = JPA.getEntityManager();
+        try {
+            return em.createQuery("SELECT f FROM Funcion f", Funcion.class).getResultList();
+        } finally {
+            em.close();
+        }
+    }
+}
