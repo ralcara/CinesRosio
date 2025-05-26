@@ -4,70 +4,81 @@
  */
 package Modelos;
 
-import java.util.Date;
-
+import jakarta.persistence.*;
+import java.time.LocalDate;
 /**
  *
  * @author rocio
  */
+
+
+@Entity
 public class Reserva {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id_reserva;
 
-    private int id;
-    private int idFuncion;
-    private int idCliente;
-    private int numAsientos;
-    private Date fechaReserva;
+    @ManyToOne
+    @JoinColumn(name = "id_funcion")
+    private Funcion funcion;
 
-    public Reserva(int id, int idFuncion, int idCliente, int numAsientos, Date fechaReserva) {
-        this.id = id;
-        this.idFuncion = idFuncion;
-        this.idCliente = idCliente;
-        this.numAsientos = numAsientos;
-        this.fechaReserva = fechaReserva;
+    @ManyToOne
+    @JoinColumn(name = "id_cliente")
+    private Cliente cliente;
+
+    private int num_asientos;
+    private LocalDate fecha_reserva;
+
+    public Reserva() {
     }
 
-    public Reserva(int idFuncion, int idCliente, int numAsientos, Date fechaReserva) {
-        this(0, idFuncion, idCliente, numAsientos, fechaReserva);
+    public Reserva(int id_reserva, Funcion funcion, Cliente cliente, int num_asientos, LocalDate fecha_reserva) {
+        this.id_reserva = id_reserva;
+        this.funcion = funcion;
+        this.cliente = cliente;
+        this.num_asientos = num_asientos;
+        this.fecha_reserva = fecha_reserva;
     }
 
-    // Getters y setters
-    public int getId() {
-        return id;
+    public int getId_reserva() {
+        return id_reserva;
     }
 
-    public int getIdFuncion() {
-        return idFuncion;
+    public void setId_reserva(int id_reserva) {
+        this.id_reserva = id_reserva;
     }
 
-    public int getIdCliente() {
-        return idCliente;
+    public Funcion getFuncion() {
+        return funcion;
     }
 
-    public int getNumAsientos() {
-        return numAsientos;
+    public void setFuncion(Funcion funcion) {
+        this.funcion = funcion;
     }
 
-    public Date getFechaReserva() {
-        return fechaReserva;
+    public Cliente getCliente() {
+        return cliente;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
     }
 
-    public void setIdFuncion(int idFuncion) {
-        this.idFuncion = idFuncion;
+    public int getNum_asientos() {
+        return num_asientos;
     }
 
-    public void setIdCliente(int idCliente) {
-        this.idCliente = idCliente;
+    public void setNum_asientos(int num_asientos) {
+        this.num_asientos = num_asientos;
     }
 
-    public void setNumAsientos(int numAsientos) {
-        this.numAsientos = numAsientos;
+    public LocalDate getFecha_reserva() {
+        return fecha_reserva;
     }
 
-    public void setFechaReserva(Date fechaReserva) {
-        this.fechaReserva = fechaReserva;
+    public void setFecha_reserva(LocalDate fecha_reserva) {
+        this.fecha_reserva = fecha_reserva;
     }
+
+  
 }

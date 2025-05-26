@@ -2,18 +2,14 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JDialog.java to edit this template
  */
-package Dialog;
+package Vistas;
 
-import Modelos.FileManager;
+
 import Modelos.Funcion;
-import java.awt.GridLayout;
 import java.io.IOException;
 import java.sql.Date;
 import java.sql.Time;
-import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JTextField;
 import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
 
 /**

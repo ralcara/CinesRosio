@@ -4,71 +4,92 @@
  */
 package Modelos;
 
-import java.sql.Time;
-import java.util.Date;
-
+import jakarta.persistence.*;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
 /**
  *
  * @author rocio
  */
-public class Funcion {
 
-    private int id;
-    private int idPelicula;
-    private Date fecha;
-    private Time hora;
+@Entity
+public class Funcion {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id_funcion;
+
+    @ManyToOne
+    @JoinColumn(name = "id_pelicula")
+    private Pelicula pelicula;
+
+    private LocalDate fecha;
+    private LocalTime hora;
     private int sala;
 
-    public Funcion(int id, int idPelicula, Date fecha, Time hora, int sala) {
-        this.id = id;
-        this.idPelicula = idPelicula;
+    @OneToMany(mappedBy = "funcion", cascade = CascadeType.ALL)
+    private List<Reserva> reservas;
+
+    public Funcion() {
+    }
+
+    public Funcion(int id_funcion, Pelicula pelicula, LocalDate fecha, LocalTime hora, int sala, List<Reserva> reservas) {
+        this.id_funcion = id_funcion;
+        this.pelicula = pelicula;
         this.fecha = fecha;
         this.hora = hora;
         this.sala = sala;
+        this.reservas = reservas;
     }
 
-    public Funcion(int idPelicula, Date fecha, Time hora, int sala) {
-        this(0, idPelicula, fecha, hora, sala);
+    
+    public int getId_funcion() {
+        return id_funcion;
     }
 
-    // Getters y setters
-    public int getId() {
-        return id;
+    public void setId_funcion(int id_funcion) {
+        this.id_funcion = id_funcion;
     }
 
-    public int getIdPelicula() {
-        return idPelicula;
+    public Pelicula getPelicula() {
+        return pelicula;
     }
 
-    public Date getFecha() {
+    public void setPelicula(Pelicula pelicula) {
+        this.pelicula = pelicula;
+    }
+
+    public LocalDate getFecha() {
         return fecha;
     }
 
-    public Time getHora() {
+    public void setFecha(LocalDate fecha) {
+        this.fecha = fecha;
+    }
+
+    public LocalTime getHora() {
         return hora;
+    }
+
+    public void setHora(LocalTime hora) {
+        this.hora = hora;
     }
 
     public int getSala() {
         return sala;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public void setIdPelicula(int idPelicula) {
-        this.idPelicula = idPelicula;
-    }
-
-    public void setFecha(Date fecha) {
-        this.fecha = fecha;
-    }
-
-    public void setHora(Time hora) {
-        this.hora = hora;
-    }
-
     public void setSala(int sala) {
         this.sala = sala;
     }
+
+    public List<Reserva> getReservas() {
+        return reservas;
+    }
+
+    public void setReservas(List<Reserva> reservas) {
+        this.reservas = reservas;
+    }
+
+   
 }

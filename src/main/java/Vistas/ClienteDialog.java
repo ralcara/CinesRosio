@@ -1,18 +1,14 @@
-package Dialog;
+package Vistas;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JDialog.java to edit this template
  */
-import Modelos.FileManager;
+import Controllers.ClienteController;
 import Modelos.Cliente;
-import java.awt.GridLayout;
-import java.io.IOException;
-import javax.swing.JButton;
-import javax.swing.JLabel;
+import java.awt.Frame;
+
 import javax.swing.JOptionPane;
-import javax.swing.JTextField;
-import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
 
 /**
  *
@@ -20,14 +16,26 @@ import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
  */
 public class ClienteDialog extends javax.swing.JDialog {
 
+    private Cliente cliente;
+    private ClienteController controller = new ClienteController();
+
     /**
      * Creates new form ClienteDialog
      */
-    public ClienteDialog(java.awt.Frame parent, boolean modal) {
+    public ClienteDialog(Frame parent, boolean modal, Cliente clienteExistente) {
         super(parent, modal);
         initComponents();
-        setTitle("Registrar Cliente - CinesRosio");
-        setLocationRelativeTo(null); // Centrar ventana
+        setLocationRelativeTo(null);
+        this.cliente = clienteExistente;
+        setTitle(cliente == null ? "Registrar Cliente" : "Editar Cliente");
+
+        // Si cliente existe, rellenar campos
+        if (cliente != null) {
+            nombre.setText(cliente.getNombre());
+            apellido.setText(cliente.getApellido());
+            email.setText(cliente.getEmail());
+            telefono.setText(cliente.getTelefono());
+        }
     }
 
     /**
@@ -182,14 +190,21 @@ public class ClienteDialog extends javax.swing.JDialog {
             return;
         }
 
-        Cliente cliente = new Cliente(nombreText, apellidoText, emailText, telefonoText);
-        try {
-            FileManager.guardarCliente(cliente, "clientes.txt");
-            JOptionPane.showMessageDialog(this, "Cliente guardado: " + cliente.getNombre() + " " + cliente.getApellido());
-            dispose(); // Cierra la ventana después de guardar
-        } catch (IOException ex) {
-            JOptionPane.showMessageDialog(this, "Error al guardar el cliente.");
+        if (cliente == null) {
+            // Crear nuevo
+            Cliente nuevoCliente = new Cliente(nombreText, apellidoText, emailText, telefonoText);
+            controller.crearCliente(nuevoCliente);
+            JOptionPane.showMessageDialog(this, "Cliente registrado con éxito.");
+        } else {
+            // Actualizar existente
+            cliente.setNombre(nombreText);
+            cliente.setApellido(apellidoText);
+            cliente.setEmail(emailText);
+            cliente.setTelefono(telefonoText);
+            controller.actualizarCliente(cliente);
+            JOptionPane.showMessageDialog(this, "Cliente actualizado con éxito.");
         }
+
 
     }//GEN-LAST:event_GuardarActionPerformed
 
@@ -203,7 +218,7 @@ public class ClienteDialog extends javax.swing.JDialog {
 
     private void SalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SalirActionPerformed
         // TODO add your handling code here:
-         dispose();
+        dispose();
 
     }//GEN-LAST:event_SalirActionPerformed
 
@@ -237,7 +252,7 @@ public class ClienteDialog extends javax.swing.JDialog {
         /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                ClienteDialog dialog = new ClienteDialog(new javax.swing.JFrame(), true);
+                ClienteDialog dialog = new ClienteDialog(new javax.swing.JFrame(), true, null);
                 dialog.setVisible(true);
             }
         });

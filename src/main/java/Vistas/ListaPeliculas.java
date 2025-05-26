@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-package JFrame;
+package Vistas;
 
 import Modelos.FileManager;
 import Modelos.Pelicula;
@@ -27,7 +27,7 @@ public class ListaPeliculas extends javax.swing.JFrame {
      * Creates new form ListaPeliculas
      */
     public ListaPeliculas() throws IOException {
-         initComponents();
+        initComponents();
         setTitle("Lista de Películas");
         setLocationRelativeTo(null);
 
@@ -127,55 +127,55 @@ public class ListaPeliculas extends javax.swing.JFrame {
     private void EditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EditarActionPerformed
         // TODO add your handling code here:
         int index = jList1.getSelectedIndex();
-if (index != -1) {
-    Pelicula actual = peliculas.get(index);
-    String editado = JOptionPane.showInputDialog(this, "Editar nombre de la película:", actual.getTitulo());
-    if (editado != null && !editado.trim().isEmpty()) {
-        actual.setTitulo(editado);
-        modelPeliculas.setElementAt(editado, index);
-        try {
-            FileManager.guardarPeliculas("Peliculas.txt", peliculas);
-        } catch (IOException ex) {
-            Logger.getLogger(ListaPeliculas.class.getName()).log(Level.SEVERE, null, ex);
+        if (index != -1) {
+            Pelicula actual = peliculas.get(index);
+            String editado = JOptionPane.showInputDialog(this, "Editar nombre de la película:", actual.getTitulo());
+            if (editado != null && !editado.trim().isEmpty()) {
+                actual.setTitulo(editado);
+                modelPeliculas.setElementAt(editado, index);
+                try {
+                    FileManager.guardarPeliculas("Peliculas.txt", peliculas);
+                } catch (IOException ex) {
+                    Logger.getLogger(ListaPeliculas.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Seleccione una película para editar.");
         }
-    }
-} else {
-    JOptionPane.showMessageDialog(this, "Seleccione una película para editar.");
-}
     }//GEN-LAST:event_EditarActionPerformed
 
     private void EliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EliminarActionPerformed
         // TODO add your handling code here:
         int index = jList1.getSelectedIndex();
-if (index != -1) {
-    int confirm = JOptionPane.showConfirmDialog(this, "¿Eliminar la película seleccionada?", "Confirmar", JOptionPane.YES_NO_OPTION);
-    if (confirm == JOptionPane.YES_OPTION) {
-        modelPeliculas.remove(index);
-        peliculas.remove(index);
-        try {
-            FileManager.guardarPeliculas("Peliculas.txt", peliculas);
-        } catch (IOException ex) {
-            Logger.getLogger(ListaPeliculas.class.getName()).log(Level.SEVERE, null, ex);
+        if (index != -1) {
+            int confirm = JOptionPane.showConfirmDialog(this, "¿Eliminar la película seleccionada?", "Confirmar", JOptionPane.YES_NO_OPTION);
+            if (confirm == JOptionPane.YES_OPTION) {
+                modelPeliculas.remove(index);
+                peliculas.remove(index);
+                try {
+                    FileManager.guardarPeliculas("Peliculas.txt", peliculas);
+                } catch (IOException ex) {
+                    Logger.getLogger(ListaPeliculas.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Seleccione una película para eliminar.");
         }
-    }
-} else {
-    JOptionPane.showMessageDialog(this, "Seleccione una película para eliminar.");
-}
     }//GEN-LAST:event_EliminarActionPerformed
 
     private void AñadirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AñadirActionPerformed
         // TODO add your handling code here:
-       String nuevoTitulo = JOptionPane.showInputDialog(this, "Ingrese el nombre de la nueva película:");
-if (nuevoTitulo != null && !nuevoTitulo.trim().isEmpty()) {
-    Pelicula nueva = new Pelicula(nuevoTitulo, "Desconocido", 120, "A", "Director");
-    peliculas.add(nueva);
-    modelPeliculas.addElement(nuevoTitulo);
-           try {
-               FileManager.guardarPeliculas("Peliculas.txt", peliculas);
-           } catch (IOException ex) {
-               Logger.getLogger(ListaPeliculas.class.getName()).log(Level.SEVERE, null, ex);
-           }
-}
+        String nuevoTitulo = JOptionPane.showInputDialog(this, "Ingrese el nombre de la nueva película:");
+        if (nuevoTitulo != null && !nuevoTitulo.trim().isEmpty()) {
+            Pelicula nueva = new Pelicula(nuevoTitulo, "Desconocido", 120, "A", "Director");
+            peliculas.add(nueva);
+            modelPeliculas.addElement(nuevoTitulo);
+            try {
+                FileManager.guardarPeliculas("Peliculas.txt", peliculas);
+            } catch (IOException ex) {
+                Logger.getLogger(ListaPeliculas.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }//GEN-LAST:event_AñadirActionPerformed
 
     private void SalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SalirActionPerformed

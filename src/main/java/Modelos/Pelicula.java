@@ -5,127 +5,96 @@
 package Modelos;
 
 import java.util.Objects;
-
+import jakarta.persistence.*;
+import java.util.List;
 /**
  *
  * @author rocio
  */
+@Entity
 public class Pelicula {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id_pelicula;
 
-    private int id;
     private String titulo;
     private String genero;
     private int duracion;
     private String clasificacion;
     private String director;
 
-    public Pelicula(int id, String titulo, String genero, int duracion, String clasificacion, String director) {
-        this.id = id;
+    @OneToMany(mappedBy = "pelicula", cascade = CascadeType.ALL)
+    private List<Funcion> funciones;
+
+    public Pelicula() {
+    }
+
+    public Pelicula(int id_pelicula, String titulo, String genero, int duracion, String clasificacion, String director, List<Funcion> funciones) {
+        this.id_pelicula = id_pelicula;
         this.titulo = titulo;
         this.genero = genero;
         this.duracion = duracion;
         this.clasificacion = clasificacion;
         this.director = director;
+        this.funciones = funciones;
     }
 
-    public Pelicula(String titulo, String genero, int duracion, String clasificacion, String director) {
-        this(0, titulo, genero, duracion, clasificacion, director);
+    
+    public int getId_pelicula() {
+        return id_pelicula;
     }
 
-    // Getters y setters
-    public int getId() {
-        return id;
+    public void setId_pelicula(int id_pelicula) {
+        this.id_pelicula = id_pelicula;
     }
 
     public String getTitulo() {
         return titulo;
     }
 
-    public String getGenero() {
-        return genero;
-    }
-
-    public int getDuracion() {
-        return duracion;
-    }
-
-    public String getClasificacion() {
-        return clasificacion;
-    }
-
-    public String getDirector() {
-        return director;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
     public void setTitulo(String titulo) {
         this.titulo = titulo;
+    }
+
+    public String getGenero() {
+        return genero;
     }
 
     public void setGenero(String genero) {
         this.genero = genero;
     }
 
+    public int getDuracion() {
+        return duracion;
+    }
+
     public void setDuracion(int duracion) {
         this.duracion = duracion;
+    }
+
+    public String getClasificacion() {
+        return clasificacion;
     }
 
     public void setClasificacion(String clasificacion) {
         this.clasificacion = clasificacion;
     }
 
+    public String getDirector() {
+        return director;
+    }
+
     public void setDirector(String director) {
         this.director = director;
     }
 
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 79 * hash + this.id;
-        hash = 79 * hash + Objects.hashCode(this.titulo);
-        hash = 79 * hash + Objects.hashCode(this.genero);
-        hash = 79 * hash + this.duracion;
-        hash = 79 * hash + Objects.hashCode(this.clasificacion);
-        hash = 79 * hash + Objects.hashCode(this.director);
-        return hash;
+    public List getFunciones() {
+        return funciones;
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final Pelicula other = (Pelicula) obj;
-        if (this.id != other.id) {
-            return false;
-        }
-        if (this.duracion != other.duracion) {
-            return false;
-        }
-        if (!Objects.equals(this.titulo, other.titulo)) {
-            return false;
-        }
-        if (!Objects.equals(this.genero, other.genero)) {
-            return false;
-        }
-        if (!Objects.equals(this.clasificacion, other.clasificacion)) {
-            return false;
-        }
-        return Objects.equals(this.director, other.director);
+    public void setFunciones(List funciones) {
+        this.funciones = funciones;
     }
 
-    @Override
-    public String toString() {
-        return "Pelicula{" + "id=" + id + ", titulo=" + titulo + ", genero=" + genero + ", duracion=" + duracion + ", clasificacion=" + clasificacion + ", director=" + director + '}';
-    }
-    
+   
 }

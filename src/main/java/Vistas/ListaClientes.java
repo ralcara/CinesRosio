@@ -2,12 +2,13 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-package JFrame;
+package Vistas;
 
-import Dialog.ClienteDialog;
+import Controllers.ClienteController;
 import Modelos.Cliente;
-import Modelos.FileManager;
+
 import java.util.ArrayList;
+import java.util.List;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 
@@ -18,7 +19,8 @@ import javax.swing.JOptionPane;
 public class ListaClientes extends javax.swing.JFrame {
 
     private DefaultListModel<String> modelClientes;
-    private javax.swing.JList<String> listaClientes;
+    private ClienteController controller;
+    private List<Cliente> listaEntidades;
 
     /**
      * Creates new form Listalientes
@@ -28,20 +30,18 @@ public class ListaClientes extends javax.swing.JFrame {
         setLocationRelativeTo(null);
         setTitle("Lista de Clientes");
 
+        controller = new ClienteController();
         modelClientes = new DefaultListModel<>();
         listaClientes.setModel(modelClientes);
-        cargarClientesDesdeArchivo();
+
+        cargarClientesDesdeBD();
     }
 
-    private void cargarClientesDesdeArchivo() {
+    private void cargarClientesDesdeBD() {
         modelClientes.clear();
-        try {
-            ArrayList<Cliente> clientes = (ArrayList<Cliente>) FileManager.cargarClientes("clientes.txt");
-            for (Cliente c : clientes) {
-                modelClientes.addElement(c.getNombre() + " " + c.getApellido());
-            }
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "No se pudo cargar la lista de clientes.");
+        listaEntidades = controller.listarClientes();
+        for (Cliente c : listaEntidades) {
+            modelClientes.addElement(c.getNombre() + " " + c.getApellido());
         }
     }
 
@@ -59,7 +59,7 @@ public class ListaClientes extends javax.swing.JFrame {
         Añadir = new javax.swing.JButton();
         salir = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jList1 = new javax.swing.JList<>();
+        listaClientes = new javax.swing.JList<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -91,12 +91,12 @@ public class ListaClientes extends javax.swing.JFrame {
             }
         });
 
-        jList1.setModel(new javax.swing.AbstractListModel<String>() {
+        listaClientes.setModel(new javax.swing.AbstractListModel<String>() {
             String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
             public int getSize() { return strings.length; }
             public String getElementAt(int i) { return strings[i]; }
         });
-        jScrollPane1.setViewportView(jList1);
+        jScrollPane1.setViewportView(listaClientes);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -136,52 +136,43 @@ public class ListaClientes extends javax.swing.JFrame {
 
     private void EditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EditarActionPerformed
         // TODO add your handling code here:
-        int selectedIndex = listaClientes.getSelectedIndex();
-        if (selectedIndex != -1) {
-            String actual = modelClientes.getElementAt(selectedIndex);
+        int index = listaClientes.getSelectedIndex();
+        if (index != -1) {
+            Cliente cliente = listaEntidades.get(index);
+            String actual = cliente.getNombre() + " " + cliente.getApellido();
             String nuevo = JOptionPane.showInputDialog(this, "Editar nombre del cliente:", actual);
+
             if (nuevo != null && !nuevo.trim().isEmpty() && nuevo.matches("[a-zA-Z ]+")) {
-                try {
-                    ArrayList<Cliente> clientes = (ArrayList<Cliente>) FileManager.cargarClientes("clientes.txt");
-                    String[] partes = nuevo.split(" ");
-                    if (partes.length >= 2) {
-                        clientes.get(selectedIndex).setNombre(partes[0]);
-                        clientes.get(selectedIndex).setApellido(partes[1]);
-                        FileManager.cargarClientes("Clientes.txt");
-                        cargarClientesDesdeArchivo();
-                    } else {
-                        JOptionPane.showMessageDialog(this, "Ingrese nombre y apellido.");
-                    }
-                } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(this, "Error al editar el cliente.");
+                String[] partes = nuevo.trim().split(" ");
+                if (partes.length >= 2) {
+                    cliente.setNombre(partes[0]);
+                    cliente.setApellido(partes[1]);
+                    controller.actualizarCliente(cliente);
+                    cargarClientesDesdeBD();
+                } else {
+                    JOptionPane.showMessageDialog(this, "Ingrese nombre y apellido.");
                 }
-            } else {
-                JOptionPane.showMessageDialog(this, "El nombre debe contener solo letras.");
             }
         } else {
             JOptionPane.showMessageDialog(this, "Seleccione un cliente para editar.");
         }
+
 
     }//GEN-LAST:event_EditarActionPerformed
 
     private void salirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_salirActionPerformed
         // TODO add your handling code here:
         this.dispose(); // Cierra la ventana actual
-     
+
     }//GEN-LAST:event_salirActionPerformed
 
     private void EliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EliminarActionPerformed
         // TODO add your handling code here:
-        int selectedIndex = listaClientes.getSelectedIndex();
-        if (selectedIndex != -1) {
-            try {
-                ArrayList<Cliente> clientes = (ArrayList<Cliente>) FileManager.cargarClientes("clientes.txt");
-                clientes.remove(selectedIndex);
-                FileManager.cargarClientes("clientes.txt");
-                cargarClientesDesdeArchivo();
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(this, "Error al eliminar cliente.");
-            }
+        int index = listaClientes.getSelectedIndex();
+        if (index != -1) {
+            Cliente cliente = listaEntidades.get(index);
+            controller.eliminarCliente(cliente.getId());
+            cargarClientesDesdeBD();
         } else {
             JOptionPane.showMessageDialog(this, "Seleccione un cliente para eliminar.");
         }
@@ -191,8 +182,10 @@ public class ListaClientes extends javax.swing.JFrame {
 
     private void AñadirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AñadirActionPerformed
         // TODO add your handling code here:
-        ClienteDialog dialog = new ClienteDialog(this, true);
-        cargarClientesDesdeArchivo();
+        ClienteDialog dialog = new ClienteDialog(this, true, null);
+        dialog.setVisible(true);
+        cargarClientesDesdeBD();
+
     }//GEN-LAST:event_AñadirActionPerformed
 
     /**
@@ -234,8 +227,8 @@ public class ListaClientes extends javax.swing.JFrame {
     private javax.swing.JButton Añadir;
     private javax.swing.JButton Editar;
     private javax.swing.JButton Eliminar;
-    private javax.swing.JList<String> jList1;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JList<String> listaClientes;
     private javax.swing.JButton salir;
     // End of variables declaration//GEN-END:variables
 }
