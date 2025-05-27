@@ -6,8 +6,6 @@ package Vistas;
 
 import Controllers.ClienteController;
 import Modelos.Cliente;
-
-import java.util.ArrayList;
 import java.util.List;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
@@ -18,7 +16,7 @@ import javax.swing.JOptionPane;
  */
 public class ListaClientes extends javax.swing.JFrame {
 
-    private DefaultListModel<String> modelClientes;
+    private DefaultListModel<Cliente> modelClientes;
     private ClienteController controller;
     private List<Cliente> listaEntidades;
 
@@ -41,7 +39,7 @@ public class ListaClientes extends javax.swing.JFrame {
         modelClientes.clear();
         listaEntidades = controller.listarClientes();
         for (Cliente c : listaEntidades) {
-            modelClientes.addElement(c.getNombre() + " " + c.getApellido());
+            modelClientes.addElement(c);  
         }
     }
 
@@ -91,11 +89,6 @@ public class ListaClientes extends javax.swing.JFrame {
             }
         });
 
-        listaClientes.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
         jScrollPane1.setViewportView(listaClientes);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -171,7 +164,7 @@ public class ListaClientes extends javax.swing.JFrame {
         int index = listaClientes.getSelectedIndex();
         if (index != -1) {
             Cliente cliente = listaEntidades.get(index);
-            controller.eliminarCliente(cliente.getId());
+            controller.eliminarCliente(cliente.getId_cliente());
             cargarClientesDesdeBD();
         } else {
             JOptionPane.showMessageDialog(this, "Seleccione un cliente para eliminar.");
@@ -228,7 +221,7 @@ public class ListaClientes extends javax.swing.JFrame {
     private javax.swing.JButton Editar;
     private javax.swing.JButton Eliminar;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JList<String> listaClientes;
+    private javax.swing.JList<Cliente> listaClientes;
     private javax.swing.JButton salir;
     // End of variables declaration//GEN-END:variables
 }

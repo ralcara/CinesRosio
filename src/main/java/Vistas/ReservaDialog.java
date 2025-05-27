@@ -4,15 +4,17 @@
  */
 package Vistas;
 
-import Modelos.FileManager;
+
+import Controllers.JPA;
+import Controllers.ReservaCotroller;
+import Modelos.Cliente;
+import Modelos.Funcion;
 import Modelos.Reserva;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
+import jakarta.persistence.EntityManager;
 import java.sql.Date;
-import javax.swing.JButton;
-import javax.swing.JLabel;
+import java.time.LocalDate;
 import javax.swing.JOptionPane;
-import javax.swing.JTextField;
+
 
 /**
  *
@@ -58,26 +60,6 @@ public class ReservaDialog extends javax.swing.JDialog {
         }
 
         return true;
-    }
-
-    private void guardarReserva() {
-        if (!controlarCampos()) {
-            return;
-        }
-
-        try {
-            int idFuncion = Integer.parseInt(Idpelicula.getText());
-            int idCliente = Integer.parseInt(IdCliente.getText());
-            int numAsientos = Integer.parseInt(NumAsiento.getText());
-            Date fechaReserva = Date.valueOf(FechaReserva.getText());
-
-            Reserva reserva = new Reserva(idFuncion, idCliente, numAsientos, fechaReserva);
-            FileManager.guardarReserva(reserva, "reservas.txt");
-            JOptionPane.showMessageDialog(this, "Reserva guardada correctamente.");
-            dispose();
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Error al guardar la reserva: " + ex.getMessage());
-        }
     }
 
     /**
@@ -180,7 +162,38 @@ public class ReservaDialog extends javax.swing.JDialog {
 
     private void GuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GuardarActionPerformed
         // TODO add your handling code here:
-        guardarReserva();
+         if (!controlarCampos()) return;
+
+    try {
+        int idFuncion = Integer.parseInt(Idpelicula.getText());
+        int idCliente = Integer.parseInt(IdCliente.getText());
+        int numAsientos = Integer.parseInt(NumAsiento.getText());
+        LocalDate fechaReserva = LocalDate.parse(FechaReserva.getText());
+
+        EntityManager em = JPA.getEntityManager();
+        Funcion funcion = em.find(Funcion.class, idFuncion);
+        Cliente cliente = em.find(Cliente.class, idCliente);
+        em.close();
+
+        if (funcion == null || cliente == null) {
+            JOptionPane.showMessageDialog(this, "No se encontró el cliente o la función.");
+            return;
+        }
+
+        Reserva reserva = new Reserva();
+        reserva.setFuncion(funcion);
+        reserva.setCliente(cliente);
+        reserva.setNum_asientos(numAsientos);
+        reserva.setFecha_reserva(fechaReserva);
+
+        ReservaCotroller controller = new ReservaCotroller();
+        controller.crearReserva(reserva);
+
+        JOptionPane.showMessageDialog(this, "Reserva guardada correctamente.");
+        dispose();
+    } catch (Exception ex) {
+        JOptionPane.showMessageDialog(this, "Error al guardar: " + ex.getMessage());
+    }
     }//GEN-LAST:event_GuardarActionPerformed
 
     private void SalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SalirActionPerformed

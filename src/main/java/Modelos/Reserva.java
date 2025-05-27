@@ -79,6 +79,13 @@ public class Reserva {
     public void setFecha_reserva(LocalDate fecha_reserva) {
         this.fecha_reserva = fecha_reserva;
     }
-
+@Override
+public String toString() {
+    return "Reserva ID: " + id_reserva + 
+           ", Función: " + (funcion != null ? funcion.getId_funcion(): "N/A") + 
+           ", Cliente: " + (cliente != null ? cliente.getNombre() : "N/A") + 
+           ", Asientos: " + num_asientos + 
+           ", Fecha: " + fecha_reserva;
+}
   
 }

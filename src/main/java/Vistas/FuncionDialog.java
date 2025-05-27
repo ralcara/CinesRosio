@@ -7,9 +7,6 @@ package Vistas;
 import Controllers.FuncionController;
 import Modelos.Funcion;
 import Modelos.Pelicula;
-import java.io.IOException;
-import java.sql.Date;
-import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import javax.swing.JOptionPane;
@@ -38,7 +35,7 @@ public class FuncionDialog extends javax.swing.JDialog {
 
         if (funcion != null) {
             setTitle("Editar Función");
-            ID.setText(String.valueOf(funcion.getPelicula().getIdPelicula()));
+            ID.setText(String.valueOf(funcion.getPelicula().getId_pelicula()));
             Fecha.setText(funcion.getFecha().toString());  // LocalDate a String
             Hora.setText(funcion.getHora().toString());    // LocalTime a String
             Sala.setText(String.valueOf(funcion.getSala()));

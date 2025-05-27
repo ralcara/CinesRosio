@@ -6,12 +6,22 @@ package Controllers;
 
 import Modelos.Reserva;
 import jakarta.persistence.EntityManager;
+import java.util.List;
 
 /**
  *
  * @author rocio
  */
 public class ReservaCotroller {
+    
+    public List<Reserva> obtenerTodas() {
+    EntityManager em = JPA.getEntityManager();
+    try {
+        return em.createQuery("SELECT r FROM Reserva r", Reserva.class).getResultList();
+    } finally {
+        em.close();
+    }
+}
      public void crearReserva(Reserva reserva) {
         EntityManager em = JPA.getEntityManager();
         try {

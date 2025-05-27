@@ -4,7 +4,7 @@
  */
 package Vistas;
 
-import Modelos.FileManager;
+import Controllers.PeliculaController;
 import Modelos.Pelicula;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,24 +20,30 @@ import javax.swing.JOptionPane;
  */
 public class ListaPeliculas extends javax.swing.JFrame {
 
-    private DefaultListModel<String> modelPeliculas;
-    private ArrayList<Pelicula> peliculas;
+    private PeliculaController controller = new PeliculaController();
+    private List<Pelicula> peliculas;
+  private DefaultListModel<Pelicula> modelPeliculas = new DefaultListModel<>();
 
     /**
      * Creates new form ListaPeliculas
      */
     public ListaPeliculas() throws IOException {
-        initComponents();
+         initComponents();
         setTitle("Lista de Películas");
         setLocationRelativeTo(null);
 
-        modelPeliculas = new DefaultListModel<>();
+        // Asignamos el modelo de Strings a jList1
         jList1.setModel(modelPeliculas);
 
-        // Cargar películas desde archivo
-        peliculas = FileManager.cargarPeliculas("Peliculas.txt");
-        peliculas.forEach(p -> modelPeliculas.addElement(p.getTitulo()));
+        cargarPeliculas();
     }
+    private void cargarPeliculas() {
+       peliculas = controller.listarPeliculas();
+    modelPeliculas.clear();
+    for (Pelicula p : peliculas) {
+        modelPeliculas.addElement(p);  
+    }
+}
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -57,11 +63,6 @@ public class ListaPeliculas extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jList1.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
         jScrollPane1.setViewportView(jList1);
 
         Editar.setText("Editar");
@@ -128,19 +129,13 @@ public class ListaPeliculas extends javax.swing.JFrame {
         // TODO add your handling code here:
         int index = jList1.getSelectedIndex();
         if (index != -1) {
-            Pelicula actual = peliculas.get(index);
-            String editado = JOptionPane.showInputDialog(this, "Editar nombre de la película:", actual.getTitulo());
-            if (editado != null && !editado.trim().isEmpty()) {
-                actual.setTitulo(editado);
-                modelPeliculas.setElementAt(editado, index);
-                try {
-                    FileManager.guardarPeliculas("Peliculas.txt", peliculas);
-                } catch (IOException ex) {
-                    Logger.getLogger(ListaPeliculas.class.getName()).log(Level.SEVERE, null, ex);
-                }
+            Pelicula seleccionada = peliculas.get(index);
+            String nuevoTitulo = JOptionPane.showInputDialog(this, "Editar título:", seleccionada.getTitulo());
+            if (nuevoTitulo != null && !nuevoTitulo.trim().isEmpty()) {
+                seleccionada.setTitulo(nuevoTitulo);
+                controller.actualizarPelicula(seleccionada);
+                cargarPeliculas();
             }
-        } else {
-            JOptionPane.showMessageDialog(this, "Seleccione una película para editar.");
         }
     }//GEN-LAST:event_EditarActionPerformed
 
@@ -148,19 +143,14 @@ public class ListaPeliculas extends javax.swing.JFrame {
         // TODO add your handling code here:
         int index = jList1.getSelectedIndex();
         if (index != -1) {
-            int confirm = JOptionPane.showConfirmDialog(this, "¿Eliminar la película seleccionada?", "Confirmar", JOptionPane.YES_NO_OPTION);
+            Pelicula seleccionada = peliculas.get(index);
+            int confirm = JOptionPane.showConfirmDialog(this, "¿Eliminar la película?", "Confirmar", JOptionPane.YES_NO_OPTION);
             if (confirm == JOptionPane.YES_OPTION) {
-                modelPeliculas.remove(index);
-                peliculas.remove(index);
-                try {
-                    FileManager.guardarPeliculas("Peliculas.txt", peliculas);
-                } catch (IOException ex) {
-                    Logger.getLogger(ListaPeliculas.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                controller.eliminarPelicula(seleccionada.getId_pelicula());
+                cargarPeliculas();
             }
-        } else {
-            JOptionPane.showMessageDialog(this, "Seleccione una película para eliminar.");
         }
+
     }//GEN-LAST:event_EliminarActionPerformed
 
     private void AñadirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AñadirActionPerformed
@@ -168,14 +158,10 @@ public class ListaPeliculas extends javax.swing.JFrame {
         String nuevoTitulo = JOptionPane.showInputDialog(this, "Ingrese el nombre de la nueva película:");
         if (nuevoTitulo != null && !nuevoTitulo.trim().isEmpty()) {
             Pelicula nueva = new Pelicula(nuevoTitulo, "Desconocido", 120, "A", "Director");
-            peliculas.add(nueva);
-            modelPeliculas.addElement(nuevoTitulo);
-            try {
-                FileManager.guardarPeliculas("Peliculas.txt", peliculas);
-            } catch (IOException ex) {
-                Logger.getLogger(ListaPeliculas.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            controller.crearPelicula(nueva);
+            cargarPeliculas();
         }
+
     }//GEN-LAST:event_AñadirActionPerformed
 
     private void SalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SalirActionPerformed
@@ -228,7 +214,7 @@ public class ListaPeliculas extends javax.swing.JFrame {
     private javax.swing.JButton Editar;
     private javax.swing.JButton Eliminar;
     private javax.swing.JButton Salir;
-    private javax.swing.JList<String> jList1;
+    private javax.swing.JList<Pelicula> jList1;
     private javax.swing.JScrollPane jScrollPane1;
     // End of variables declaration//GEN-END:variables
 }

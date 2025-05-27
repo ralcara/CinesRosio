@@ -10,6 +10,7 @@ import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+
 /**
  *
  * @author rocio
@@ -17,6 +18,7 @@ import java.util.List;
 
 @Entity
 public class Funcion {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id_funcion;
@@ -32,10 +34,12 @@ public class Funcion {
     @OneToMany(mappedBy = "funcion", cascade = CascadeType.ALL)
     private List<Reserva> reservas;
 
-    public Funcion(LocalDate fecha1, Pelicula pelicula1, LocalTime hora1, int sala1) {
+    public Funcion(LocalDate fecha, Pelicula pelicula, LocalTime hora, int sala) {
+        this.fecha = fecha;
+        this.pelicula = pelicula;
+        this.hora = hora;
+        this.sala = sala;
     }
-
-    
 
     public Funcion(int id_funcion, Pelicula pelicula, LocalDate fecha, LocalTime hora, int sala, List<Reserva> reservas) {
         this.id_funcion = id_funcion;
@@ -46,7 +50,6 @@ public class Funcion {
         this.reservas = reservas;
     }
 
-    
     public int getId_funcion() {
         return id_funcion;
     }
@@ -95,13 +98,9 @@ public class Funcion {
         this.reservas = reservas;
     }
 
-    public String getIdPelicula() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    @Override
+    public String toString() {
+        return getPelicula() + ", " + getFecha() + ", " + getHora() + ", Sala: " + getSala();
     }
 
-    public void setIdPelicula(int parseInt) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-   
 }

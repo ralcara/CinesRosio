@@ -6,6 +6,7 @@ package Controllers;
 
 import Modelos.Pelicula;
 import jakarta.persistence.EntityManager;
+import java.util.List;
 
 /**
  *
@@ -13,6 +14,15 @@ import jakarta.persistence.EntityManager;
  */
 public class PeliculaController {
 
+    public List<Pelicula> listarPeliculas() {
+    EntityManager em = JPA.getEntityManager();
+    try {
+        return em.createQuery("SELECT p FROM Pelicula p", Pelicula.class).getResultList();
+    } finally {
+        em.close();
+    }
+}
+    
     public void crearPelicula(Pelicula pelicula) {
         EntityManager em = JPA.getEntityManager();
         try {

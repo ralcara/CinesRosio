@@ -24,7 +24,7 @@ import javax.swing.JOptionPane;
  */
 public class ListaFunciones extends javax.swing.JFrame {
 
-    private DefaultListModel<String> modelFunciones;
+    private DefaultListModel<Funcion> modelFunciones;
     private List<Funcion> listaFunciones;
     private FuncionController funcionController;
 
@@ -43,26 +43,26 @@ public class ListaFunciones extends javax.swing.JFrame {
         cargarFuncionesDesdeBD();
     }
 
-    private void cargarFuncionesDesdeBD() {
-        modelFunciones.clear();
-        listaFunciones = new ArrayList<>();
+   private void cargarFuncionesDesdeBD() {
+    modelFunciones.clear();
+    listaFunciones = new ArrayList<>();
 
-        try {
-            listaFunciones = funcionController.listarFunciones();
-            for (Funcion f : listaFunciones) {
-                modelFunciones.addElement(funcionToString(f));
-            }
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error al cargar funciones desde la base de datos.", "Error", JOptionPane.ERROR_MESSAGE);
+    try {
+        listaFunciones = funcionController.listarFunciones();
+        for (Funcion f : listaFunciones) {
+            modelFunciones.addElement(f);
         }
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this, "Error al cargar funciones desde la base de datos.", "Error", JOptionPane.ERROR_MESSAGE);
     }
+}
 
     private void guardarCambios() {
         cargarFuncionesDesdeBD();
     }
 
     private String funcionToString(Funcion f) {
-        return f.getIdPelicula() + ", " + f.getFecha() + ", " + f.getHora() + ", Sala: " + f.getSala();
+        return f.getPelicula() + ", " + f.getFecha() + ", " + f.getHora() + ", Sala: " + f.getSala();
     }
 
     /**
@@ -83,11 +83,6 @@ public class ListaFunciones extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        Lista.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
         jScrollPane2.setViewportView(Lista);
 
         Editar.setText("Editar");
@@ -155,8 +150,10 @@ public class ListaFunciones extends javax.swing.JFrame {
         int selectedIndex = Lista.getSelectedIndex();
         if (selectedIndex != -1) {
             Funcion f = listaFunciones.get(selectedIndex);
-            String nueva = JOptionPane.showInputDialog(this, "Editar función (ID,Fecha(YYYY-MM-DD),Hora(HH:mm:ss),Sala):",
-                    f.getIdPelicula() + "," + f.getFecha() + "," + f.getHora() + "," + f.getSala());
+            String datosActuales = f.getPelicula().getId_pelicula() + "," + f.getFecha() + "," + f.getHora() + "," + f.getSala();
+
+            String nueva = JOptionPane.showInputDialog(this, "Editar función (ID_Pelicula,Fecha(YYYY-MM-DD),Hora(HH:mm:ss),Sala):", datosActuales);
+
             if (nueva != null && !nueva.trim().isEmpty()) {
                 try {
                     String[] partes = nueva.split(",");
@@ -164,16 +161,24 @@ public class ListaFunciones extends javax.swing.JFrame {
                         throw new IllegalArgumentException("Formato incorrecto");
                     }
 
-                    f.setIdPelicula(Integer.parseInt(partes[0].trim()));
-                    f.setFecha(LocalDate.parse(partes[1].trim()));
-                    f.setHora(LocalTime.parse(partes[2].trim()));
-                    f.setSala(Integer.parseInt(partes[3].trim()));
+                    int idPelicula = Integer.parseInt(partes[0].trim());
+                    LocalDate fecha = LocalDate.parse(partes[1].trim());
+                    LocalTime hora = LocalTime.parse(partes[2].trim());
+                    int sala = Integer.parseInt(partes[3].trim());
+
+                    Pelicula nuevaPelicula = new Pelicula();
+                    nuevaPelicula.setId_pelicula(idPelicula);
+
+                    f.setPelicula(nuevaPelicula);
+                    f.setFecha(fecha);
+                    f.setHora(hora);
+                    f.setSala(sala);
 
                     funcionController.actualizarFuncion(f);
                     guardarCambios();
 
                 } catch (Exception e) {
-                    JOptionPane.showMessageDialog(this, "Formato incorrecto. Use ID,Fecha,Hora,Sala\nEjemplo: 1,2025-05-26,18:30:00,3", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Formato incorrecto. Use ID_Pelicula,Fecha,Hora,Sala\nEjemplo: 1,2025-05-26,18:30:00,3", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         } else {
@@ -189,8 +194,8 @@ public class ListaFunciones extends javax.swing.JFrame {
         if (selectedIndex != -1) {
             Funcion f = listaFunciones.get(selectedIndex);
             try {
-                int idPelicula = Integer.parseInt(f.getIdPelicula());
-                funcionController.eliminarFuncion(idPelicula);
+                int idFuncion = f.getId_funcion(); // ✅ Eliminar por ID de la función
+                funcionController.eliminarFuncion(idFuncion);
                 guardarCambios();
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(this, "Error al eliminar la función.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -209,31 +214,31 @@ public class ListaFunciones extends javax.swing.JFrame {
 
     private void AñadirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AñadirActionPerformed
         // TODO add your handling code here:
-         String nueva = JOptionPane.showInputDialog(this, "Nueva función (ID_Pelicula,Fecha(YYYY-MM-DD),Hora(HH:mm:ss),Sala):");
-    if (nueva != null && !nueva.trim().isEmpty()) {
-        try {
-            String[] partes = nueva.split(",");
-            if (partes.length != 4) {
-                throw new IllegalArgumentException("Formato incorrecto");
+        String nueva = JOptionPane.showInputDialog(this, "Nueva función (ID_Pelicula,Fecha(YYYY-MM-DD),Hora(HH:mm:ss),Sala):");
+        if (nueva != null && !nueva.trim().isEmpty()) {
+            try {
+                String[] partes = nueva.split(",");
+                if (partes.length != 4) {
+                    throw new IllegalArgumentException("Formato incorrecto");
+                }
+
+                int idPelicula = Integer.parseInt(partes[0].trim());
+                LocalDate fecha = LocalDate.parse(partes[1].trim());
+                LocalTime hora = LocalTime.parse(partes[2].trim());
+                int sala = Integer.parseInt(partes[3].trim());
+
+                Pelicula pelicula = new Pelicula();
+                pelicula.setId_pelicula(idPelicula);
+
+                Funcion nuevaFuncion = new Funcion(fecha, pelicula, hora, sala);
+
+                funcionController.crearFuncion(nuevaFuncion);
+                guardarCambios();
+
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Formato incorrecto. Use ID_Pelicula,Fecha,Hora,Sala", "Error", JOptionPane.ERROR_MESSAGE);
             }
-
-            int idPelicula = Integer.parseInt(partes[0].trim());
-            LocalDate fecha = LocalDate.parse(partes[1].trim());
-            LocalTime hora = LocalTime.parse(partes[2].trim());
-            int sala = Integer.parseInt(partes[3].trim());
-
-            Pelicula pelicula = new Pelicula();
-            pelicula.setIdPelicula(idPelicula);
-
-            Funcion nuevaFuncion = new Funcion(fecha, pelicula, hora, sala);
-
-            funcionController.crearFuncion(nuevaFuncion);
-            guardarCambios();
-
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Formato incorrecto. Use ID_Pelicula,Fecha,Hora,Sala", "Error", JOptionPane.ERROR_MESSAGE);
         }
-    }
 
 
     }//GEN-LAST:event_AñadirActionPerformed
@@ -277,7 +282,7 @@ public class ListaFunciones extends javax.swing.JFrame {
     private javax.swing.JButton Añadir;
     private javax.swing.JButton Editar;
     private javax.swing.JButton Eliminar;
-    private javax.swing.JList<String> Lista;
+    private javax.swing.JList<Funcion> Lista;
     private javax.swing.JButton Salir;
     private javax.swing.JScrollPane jScrollPane2;
     // End of variables declaration//GEN-END:variables

@@ -4,17 +4,52 @@
  */
 package Vistas;
 
+import Controllers.ClienteController;
+import Controllers.FuncionController;
+import Controllers.ReservaCotroller;
+import Modelos.Cliente;
+import Modelos.Funcion;
+import Modelos.Reserva;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
+import java.util.List;
+import javax.swing.DefaultListModel;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author rocio
  */
 public class ListaReservas extends javax.swing.JFrame {
 
+    private ReservaCotroller controller = new ReservaCotroller();
+    private ClienteController clienteController = new ClienteController();
+    private FuncionController funcionController = new FuncionController();
+    private DefaultListModel<Reserva> modeloLista = new DefaultListModel<>();
+
     /**
      * Creates new form ListaReservas
      */
     public ListaReservas() {
         initComponents();
+        setTitle("Lista de Reservas");
+        setLocationRelativeTo(null);
+        jList1.setModel(modeloLista);
+        cargarReservasDesdeBD();
+
+    }
+
+    private void cargarReservasDesdeBD() {
+        modeloLista.clear();
+        try {
+            List<Reserva> reservas = controller.obtenerTodas();
+            for (Reserva r : reservas) {
+                modeloLista.addElement(r);
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error al cargar reservas desde la base de datos.\n" + e.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     /**
@@ -35,11 +70,6 @@ public class ListaReservas extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jList1.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
         jScrollPane1.setViewportView(jList1);
 
         editar.setText("Editar");
@@ -109,15 +139,143 @@ public class ListaReservas extends javax.swing.JFrame {
 
     private void añadirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_añadirActionPerformed
         // TODO add your handling code here:
+        try {
+            // Ejemplo simple de entrada por diálogo:
+            String datos = JOptionPane.showInputDialog(this,
+                    "Ingrese datos de reserva separados por comas:\n"
+                    + "id_funcion, id_cliente, num_asientos, fecha(YYYY-MM-DD)");
+
+            if (datos == null || datos.trim().isEmpty()) {
+                return;
+            }
+
+            String[] partes = datos.split(",");
+            if (partes.length != 4) {
+                throw new IllegalArgumentException("Debe ingresar 4 datos separados por coma");
+            }
+
+            int idFuncion = Integer.parseInt(partes[0].trim());
+            int idCliente = Integer.parseInt(partes[1].trim());
+            int numAsientos = Integer.parseInt(partes[2].trim());
+            LocalDate fecha = LocalDate.parse(partes[3].trim());
+
+            // Buscar Funcion y Cliente
+            Funcion funcion = funcionController.buscarFuncion(idFuncion);
+            Cliente cliente = clienteController.buscarCliente(idCliente);
+
+            if (funcion == null || cliente == null) {
+                JOptionPane.showMessageDialog(this, "Funcion o Cliente no encontrados.",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            Reserva reserva = new Reserva();
+            reserva.setFuncion(funcion);
+            reserva.setCliente(cliente);
+            reserva.setNum_asientos(numAsientos);
+            reserva.setFecha_reserva(fecha);
+
+            controller.crearReserva(reserva);
+            cargarReservasDesdeBD();
+
+        } catch (NumberFormatException | DateTimeParseException e) {
+            JOptionPane.showMessageDialog(this, "Formato de datos incorrecto: " + e.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error al crear reserva: " + e.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+
     }//GEN-LAST:event_añadirActionPerformed
 
     private void eliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eliminarActionPerformed
-        // TODO add your handling code here:
+        // TODO add your handling code here
+        int index = jList1.getSelectedIndex();
+        if (index == -1) {
+            JOptionPane.showMessageDialog(this, "Seleccione una reserva para eliminar.");
+            return;
+        }
+        Reserva reserva = modeloLista.getElementAt(index);
+
+        int confirm = JOptionPane.showConfirmDialog(this,
+                "¿Está seguro de eliminar la reserva seleccionada?",
+                "Confirmar eliminación",
+                JOptionPane.YES_NO_OPTION);
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            try {
+                controller.eliminarReserva(reserva.getId_reserva());
+                cargarReservasDesdeBD();
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Error al eliminar reserva: " + e.getMessage(),
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+
+
     }//GEN-LAST:event_eliminarActionPerformed
 
     private void editarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editarActionPerformed
         // TODO add your handling code here:
-        
+        int index = jList1.getSelectedIndex();
+        if (index == -1) {
+            JOptionPane.showMessageDialog(this, "Seleccione una reserva para editar.");
+            return;
+        }
+
+        Reserva reserva = modeloLista.getElementAt(index);
+
+        try {
+            String datosActuales = reserva.getFuncion().getId_funcion() + ", "
+                    + reserva.getCliente().getId_cliente() + ", "
+                    + reserva.getNum_asientos() + ", "
+                    + reserva.getFecha_reserva();
+
+            String datosNuevos = JOptionPane.showInputDialog(this,
+                    "Editar datos (id_funcion, id_cliente, num_asientos, fecha(YYYY-MM-DD)):",
+                    datosActuales);
+
+            if (datosNuevos == null || datosNuevos.trim().isEmpty()) {
+                return;
+            }
+
+            String[] partes = datosNuevos.split(",");
+            if (partes.length != 4) {
+                throw new IllegalArgumentException("Debe ingresar 4 datos separados por coma");
+            }
+
+            int idFuncion = Integer.parseInt(partes[0].trim());
+            int idCliente = Integer.parseInt(partes[1].trim());
+            int numAsientos = Integer.parseInt(partes[2].trim());
+            LocalDate fecha = LocalDate.parse(partes[3].trim());
+
+            Funcion funcion = funcionController.buscarFuncion(idFuncion);
+            Cliente cliente = clienteController.buscarCliente(idCliente);
+
+            if (funcion == null || cliente == null) {
+                JOptionPane.showMessageDialog(this, "Funcion o Cliente no encontrados.",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            reserva.setFuncion(funcion);
+            reserva.setCliente(cliente);
+            reserva.setNum_asientos(numAsientos);
+            reserva.setFecha_reserva(fecha);
+
+            controller.actualizarReserva(reserva);
+            cargarReservasDesdeBD();
+
+        } catch (NumberFormatException | DateTimeParseException e) {
+            JOptionPane.showMessageDialog(this, "Formato de datos incorrecto: " + e.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error al actualizar reserva: " + e.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+
     }//GEN-LAST:event_editarActionPerformed
 
     /**
@@ -159,7 +317,7 @@ public class ListaReservas extends javax.swing.JFrame {
     private javax.swing.JButton añadir;
     private javax.swing.JButton editar;
     private javax.swing.JButton eliminar;
-    private javax.swing.JList<String> jList1;
+    private javax.swing.JList<Reserva> jList1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JButton salir;
     // End of variables declaration//GEN-END:variables

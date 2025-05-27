@@ -13,11 +13,11 @@ import jakarta.persistence.Persistence;
  * @author rocio
  */
 public class JPA {
-    private static final EntityManagerFactory emf =
-            Persistence.createEntityManagerFactory("CinesRosioPU");
+
+    private static final EntityManagerFactory emf
+            = Persistence.createEntityManagerFactory("CinesRosioPU");
 
     public static EntityManager getEntityManager() {
         return emf.createEntityManager();
     }
 }
-

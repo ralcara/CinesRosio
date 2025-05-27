@@ -29,15 +29,13 @@ public class Pelicula {
     public Pelicula() {
     }
 
-    public Pelicula(int id_pelicula, String titulo, String genero, int duracion, String clasificacion, String director, List<Funcion> funciones) {
-        this.id_pelicula = id_pelicula;
-        this.titulo = titulo;
-        this.genero = genero;
-        this.duracion = duracion;
-        this.clasificacion = clasificacion;
-        this.director = director;
-        this.funciones = funciones;
-    }
+   public Pelicula(String titulo, String genero, int duracion, String clasificacion, String director) {
+    this.titulo = titulo;
+    this.genero = genero;
+    this.duracion = duracion;
+    this.clasificacion = clasificacion;
+    this.director = director;
+}
 
     
     public int getId_pelicula() {
@@ -95,14 +93,8 @@ public class Pelicula {
     public void setFunciones(List funciones) {
         this.funciones = funciones;
     }
-
-    public Object getIdPelicula() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    public void setIdPelicula(int idPelicula) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-   
+   @Override
+public String toString() {
+    return this.titulo;
+}
 }
