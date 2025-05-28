@@ -10,81 +10,83 @@ import java.util.List;
  * @author rocio
  */
 @Entity
+@Table(name = "cliente")
 public class Cliente {
+
+    // Clave primaria k se autoincrementa
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id_cliente;
+    @Column(name = "id_cliente")
+    private int idCliente;
 
+    // Columna nombre en la tabla cliente
+    @Column(name = "nombre")
     private String nombre;
+
+    // Columna apellido en la tabla cliente
+    @Column(name = "apellido")
     private String apellido;
-    private String email;
+
+    // Columna correo electrónico en la tabla cliente
+    @Column(name = "correo")
+    private String email; 
+
+    // Columna teléfono en la tabla cliente
+    @Column(name = "telefono")
     private String telefono;
 
-    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)
-    private List<Reserva> reservas;
+  
+    public Cliente() {}
 
-    public Cliente(String nombreText, String apellidoText, String emailText, String telefonoText) {
-    }
-
-    public Cliente(int id_cliente, String nombre, String apellido, String email, String telefono, List<Reserva> reservas) {
-        this.id_cliente = id_cliente;
+    public Cliente(String nombre, String apellido, String email, String telefono) {
         this.nombre = nombre;
         this.apellido = apellido;
         this.email = email;
         this.telefono = telefono;
-        this.reservas = reservas;
     }
 
-    
-    public int getId_cliente() {
-        return id_cliente;
-    }
+    // Getters y setters
 
-    public void setId_cliente(int id_cliente) {
-        this.id_cliente = id_cliente;
+    public int getIdCliente() {
+        return idCliente;
     }
-
+    public void setIdCliente(int idCliente) {
+        this.idCliente = idCliente;
+    }
     public String getNombre() {
         return nombre;
     }
-
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
-
     public String getApellido() {
         return apellido;
     }
-
     public void setApellido(String apellido) {
         this.apellido = apellido;
     }
-
     public String getEmail() {
         return email;
     }
-
     public void setEmail(String email) {
         this.email = email;
     }
-
     public String getTelefono() {
         return telefono;
     }
-
     public void setTelefono(String telefono) {
         this.telefono = telefono;
     }
 
-    public List<Reserva> getReservas() {
-        return reservas;
+ 
+    @Override
+    public String toString() {
+        return "Cliente{" + 
+               "idCliente=" + idCliente + 
+               ", nombre=" + nombre + 
+               ", apellido=" + apellido + 
+               ", email=" + email + 
+               ", telefono=" + telefono + 
+               '}';
     }
-
-    public void setReservas(List<Reserva> reservas) {
-        this.reservas = reservas;
-    }
-
-   
-
-    
 }
