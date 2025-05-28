@@ -11,29 +11,33 @@ import java.time.LocalDate;
  * @author rocio
  */
 
-
 @Entity
+@Table(name = "reserva")
 public class Reserva {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id_reserva;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_funcion")
     private Funcion funcion;
-
-    @ManyToOne
+    // Relación muchos a uno con la entidad Cliente
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_cliente")
     private Cliente cliente;
-
+// no puede ser nula al igual k la fecha de reserva
+    @Column(name = "cantidad_boletos", nullable = false)
     private int num_asientos;
-    private LocalDate fecha_reserva;
+
+    @Column(name = "fecha_reserva", nullable = false)
+    private LocalDateTime fecha_reserva;
 
     public Reserva() {
     }
 
-    public Reserva(int id_reserva, Funcion funcion, Cliente cliente, int num_asientos, LocalDate fecha_reserva) {
-        this.id_reserva = id_reserva;
+    public Reserva(Funcion funcion, Cliente cliente, int num_asientos, LocalDateTime fecha_reserva) {
         this.funcion = funcion;
         this.cliente = cliente;
         this.num_asientos = num_asientos;
@@ -72,20 +76,22 @@ public class Reserva {
         this.num_asientos = num_asientos;
     }
 
-    public LocalDate getFecha_reserva() {
+    public LocalDateTime getFecha_reserva() {
         return fecha_reserva;
     }
 
-    public void setFecha_reserva(LocalDate fecha_reserva) {
+    public void setFecha_reserva(LocalDateTime fecha_reserva) {
         this.fecha_reserva = fecha_reserva;
     }
-@Override
-public String toString() {
-    return "Reserva ID: " + id_reserva + 
-           ", Función: " + (funcion != null ? funcion.getId_funcion(): "N/A") + 
-           ", Cliente: " + (cliente != null ? cliente.getNombre() : "N/A") + 
-           ", Asientos: " + num_asientos + 
-           ", Fecha: " + fecha_reserva;
-}
-  
+
+    @Override
+    public String toString() {
+        return "Reserva{"
+                + "id_reserva=" + id_reserva
+                + ", funcion=" + (funcion != null ? funcion.getId_funcion() : "N/A")
+                + ", cliente=" + (cliente != null ? cliente.getNombre() : "N/A")
+                + ", num_asientos=" + num_asientos
+                + ", fecha_reserva=" + fecha_reserva
+                + '}';
+    }
 }
