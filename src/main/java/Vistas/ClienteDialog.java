@@ -175,40 +175,51 @@ public class ClienteDialog extends javax.swing.JDialog {
 
     private void GuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GuardarActionPerformed
         // TODO add your handling code here:
+         // obtener los campos 
         String nombreText = nombre.getText().trim();
         String apellidoText = apellido.getText().trim();
         String emailText = email.getText().trim();
         String telefonoText = telefono.getText().trim();
 
+//  el nombre puede tener solo letras (mayúsculas o minúsculas)
         if (!nombreText.matches("[a-zA-Z]+")) {
             JOptionPane.showMessageDialog(this, "El nombre debe tener solo letras.");
-            return;
+            return; // Detener la ejecución si se mete algo k no sea letras
         }
 
+//  que el apellido tenga solo letras
         if (!apellidoText.matches("[a-zA-Z]+")) {
             JOptionPane.showMessageDialog(this, "El apellido debe tener solo letras.");
             return;
         }
 
+//  que el num contenga solo numeros
         if (!telefonoText.matches("\\d+")) {
             JOptionPane.showMessageDialog(this, "El teléfono debe tener solo números.");
             return;
         }
 
-        if (cliente == null) {
-            // Crear nuevo
-            Cliente nuevoCliente = new Cliente(nombreText, apellidoText, emailText, telefonoText);
-            controller.crearCliente(nuevoCliente);
-            JOptionPane.showMessageDialog(this, "Cliente registrado con éxito.");
-        } else {
-            // Actualizar existente
-            cliente.setNombre(nombreText);
-            cliente.setApellido(apellidoText);
-            cliente.setEmail(emailText);
-            cliente.setTelefono(telefonoText);
-            controller.actualizarCliente(cliente);
-            JOptionPane.showMessageDialog(this, "Cliente actualizado con éxito.");
+        try {
+            if (cliente == null) {
+                // Si no hay un cliente escogio se crea uno ocn los datos metios
+                Cliente nuevoCliente = new Cliente(nombreText, apellidoText, emailText, telefonoText);
+                controller.crearCliente(nuevoCliente);  // guardo nuevo cliente en bd
+                JOptionPane.showMessageDialog(this, "Cliente registrado");
+            } else {
+                // Si existe el clientea actualizo datps 
+                cliente.setNombre(nombreText);
+                cliente.setApellido(apellidoText);
+                cliente.setEmail(emailText);
+                cliente.setTelefono(telefonoText);
+                controller.actualizarCliente(cliente); // cambiar cliente en bd
+                JOptionPane.showMessageDialog(this, "Cliente actualizado");
+            }
+            this.dispose(); // Cerrar la ventana después de guardar
+        } catch (Exception e) {
+            //  mensaje de error si no guarda
+            JOptionPane.showMessageDialog(this, "Error al guardar el cliente: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
+
 
 
     }//GEN-LAST:event_GuardarActionPerformed
