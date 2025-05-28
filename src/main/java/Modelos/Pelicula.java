@@ -11,33 +11,43 @@ import java.util.List;
  *
  * @author rocio
  */
+
 @Entity
+@Table(name = "pelicula")  
 public class Pelicula {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id_pelicula;
+    @Column(name = "id")      private int id_pelicula;
 
+    @Column(name = "titulo")
     private String titulo;
+
+    @Column(name = "genero")
     private String genero;
+
+    @Column(name = "duracion")
     private int duracion;
+
+    @Column(name = "clasificacion")
     private String clasificacion;
+
+    @Column(name = "director")
     private String director;
 
     @OneToMany(mappedBy = "pelicula", cascade = CascadeType.ALL)
     private List<Funcion> funciones;
 
-    public Pelicula() {
+    public Pelicula() {}
+
+    public Pelicula(String titulo, String genero, int duracion, String clasificacion, String director) {
+        this.titulo = titulo;
+        this.genero = genero;
+        this.duracion = duracion;
+        this.clasificacion = clasificacion;
+        this.director = director;
     }
 
-   public Pelicula(String titulo, String genero, int duracion, String clasificacion, String director) {
-    this.titulo = titulo;
-    this.genero = genero;
-    this.duracion = duracion;
-    this.clasificacion = clasificacion;
-    this.director = director;
-}
-
-    
     public int getId_pelicula() {
         return id_pelicula;
     }
@@ -86,15 +96,16 @@ public class Pelicula {
         this.director = director;
     }
 
-    public List getFunciones() {
+    public List<Funcion> getFunciones() {
         return funciones;
     }
 
-    public void setFunciones(List funciones) {
+    public void setFunciones(List<Funcion> funciones) {
         this.funciones = funciones;
     }
-   @Override
-public String toString() {
-    return this.titulo;
-}
+
+    @Override
+    public String toString() {
+        return this.titulo;
+    }
 }
