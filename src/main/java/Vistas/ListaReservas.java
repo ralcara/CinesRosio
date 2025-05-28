@@ -139,53 +139,50 @@ public class ListaReservas extends javax.swing.JFrame {
 
     private void añadirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_añadirActionPerformed
         // TODO add your handling code here:
-        try {
-            // Ejemplo simple de entrada por diálogo:
-            String datos = JOptionPane.showInputDialog(this,
-                    "Ingrese datos de reserva separados por comas:\n"
-                    + "id_funcion, id_cliente, num_asientos, fecha(YYYY-MM-DD)");
+       try {
+        String datos = JOptionPane.showInputDialog(this,
+                "Ingrese datos de reserva separados por comas:\n"
+                + "id_funcion, id_cliente, num_asientos, fecha (YYYY-MM-DDTHH:MM:SS)");
 
-            if (datos == null || datos.trim().isEmpty()) {
-                return;
-            }
-
-            String[] partes = datos.split(",");
-            if (partes.length != 4) {
-                throw new IllegalArgumentException("Debe ingresar 4 datos separados por coma");
-            }
-
-            int idFuncion = Integer.parseInt(partes[0].trim());
-            int idCliente = Integer.parseInt(partes[1].trim());
-            int numAsientos = Integer.parseInt(partes[2].trim());
-            LocalDate fecha = LocalDate.parse(partes[3].trim());
-
-            // Buscar Funcion y Cliente
-            Funcion funcion = funcionController.buscarFuncion(idFuncion);
-            Cliente cliente = clienteController.buscarCliente(idCliente);
-
-            if (funcion == null || cliente == null) {
-                JOptionPane.showMessageDialog(this, "Funcion o Cliente no encontrados.",
-                        "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            Reserva reserva = new Reserva();
-            reserva.setFuncion(funcion);
-            reserva.setCliente(cliente);
-            reserva.setNum_asientos(numAsientos);
-            reserva.setFecha_reserva(fecha);
-
-            controller.crearReserva(reserva);
-            cargarReservasDesdeBD();
-
-        } catch (NumberFormatException | DateTimeParseException e) {
-            JOptionPane.showMessageDialog(this, "Formato de datos incorrecto: " + e.getMessage(),
-                    "Error", JOptionPane.ERROR_MESSAGE);
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error al crear reserva: " + e.getMessage(),
-                    "Error", JOptionPane.ERROR_MESSAGE);
+        if (datos == null || datos.trim().isEmpty()) {
+            return;
         }
 
+        String[] partes = datos.split(",");
+        if (partes.length != 4) {
+            throw new IllegalArgumentException("Debe ingresar 4 datos separados por coma");
+        }
+
+        int idFuncion = Integer.parseInt(partes[0].trim());
+        int idCliente = Integer.parseInt(partes[1].trim());
+        int numAsientos = Integer.parseInt(partes[2].trim());
+        LocalDateTime fecha = LocalDateTime.parse(partes[3].trim());
+
+        Funcion funcion = funcionController.buscarFuncion(idFuncion);
+        Cliente cliente = clienteController.buscarCliente(idCliente);
+
+        if (funcion == null || cliente == null) {
+            JOptionPane.showMessageDialog(this, "Funcion o Cliente no encontrados.",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        Reserva reserva = new Reserva();
+        reserva.setFuncion(funcion);
+        reserva.setCliente(cliente);
+        reserva.setNum_asientos(numAsientos);
+        reserva.setFecha_reserva(fecha);
+
+        controller.crearReserva(reserva);
+        cargarReservasDesdeBD();
+
+    } catch (NumberFormatException | DateTimeParseException e) {
+        JOptionPane.showMessageDialog(this, "Formato de datos incorrecto: " + e.getMessage(),
+                "Error", JOptionPane.ERROR_MESSAGE);
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this, "Error al crear reserva: " + e.getMessage(),
+                "Error", JOptionPane.ERROR_MESSAGE);
+    }
 
     }//GEN-LAST:event_añadirActionPerformed
 
@@ -219,61 +216,58 @@ public class ListaReservas extends javax.swing.JFrame {
     private void editarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editarActionPerformed
         // TODO add your handling code here:
         int index = jList1.getSelectedIndex();
-        if (index == -1) {
-            JOptionPane.showMessageDialog(this, "Seleccione una reserva para editar.");
+    if (index == -1) {
+        JOptionPane.showMessageDialog(this, "Seleccione una reserva para editar.");
+        return;
+    }
+    Reserva reserva = modeloLista.getElementAt(index);
+    try {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        String datosActuales = reserva.getFuncion().getId_funcion() + ", "
+                + reserva.getCliente().getIdCliente() + ", "
+                + reserva.getNum_asientos() + ", "
+                + reserva.getFecha_reserva().format(formatter);
+
+        String datosNuevos = JOptionPane.showInputDialog(this,
+                "Editar datos (id_funcion, id_cliente, num_asientos, fecha y hora (yyyy-MM-dd HH:mm)):",
+                datosActuales);
+
+        if (datosNuevos == null || datosNuevos.trim().isEmpty()) {
             return;
         }
 
-        Reserva reserva = modeloLista.getElementAt(index);
-
-        try {
-            String datosActuales = reserva.getFuncion().getId_funcion() + ", "
-                    + reserva.getCliente().getId_cliente() + ", "
-                    + reserva.getNum_asientos() + ", "
-                    + reserva.getFecha_reserva();
-
-            String datosNuevos = JOptionPane.showInputDialog(this,
-                    "Editar datos (id_funcion, id_cliente, num_asientos, fecha(YYYY-MM-DD)):",
-                    datosActuales);
-
-            if (datosNuevos == null || datosNuevos.trim().isEmpty()) {
-                return;
-            }
-
-            String[] partes = datosNuevos.split(",");
-            if (partes.length != 4) {
-                throw new IllegalArgumentException("Debe ingresar 4 datos separados por coma");
-            }
-
-            int idFuncion = Integer.parseInt(partes[0].trim());
-            int idCliente = Integer.parseInt(partes[1].trim());
-            int numAsientos = Integer.parseInt(partes[2].trim());
-            LocalDate fecha = LocalDate.parse(partes[3].trim());
-
-            Funcion funcion = funcionController.buscarFuncion(idFuncion);
-            Cliente cliente = clienteController.buscarCliente(idCliente);
-
-            if (funcion == null || cliente == null) {
-                JOptionPane.showMessageDialog(this, "Funcion o Cliente no encontrados.",
-                        "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            reserva.setFuncion(funcion);
-            reserva.setCliente(cliente);
-            reserva.setNum_asientos(numAsientos);
-            reserva.setFecha_reserva(fecha);
-
-            controller.actualizarReserva(reserva);
-            cargarReservasDesdeBD();
-
-        } catch (NumberFormatException | DateTimeParseException e) {
-            JOptionPane.showMessageDialog(this, "Formato de datos incorrecto: " + e.getMessage(),
-                    "Error", JOptionPane.ERROR_MESSAGE);
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error al actualizar reserva: " + e.getMessage(),
-                    "Error", JOptionPane.ERROR_MESSAGE);
+        String[] partes = datosNuevos.split(",");
+        if (partes.length != 4) {
+            throw new IllegalArgumentException("Debe ingresar 4 datos separados por coma");
         }
+
+        int idFuncion = Integer.parseInt(partes[0].trim());
+        int idCliente = Integer.parseInt(partes[1].trim());
+        int numAsientos = Integer.parseInt(partes[2].trim());
+        LocalDateTime fechaHora = LocalDateTime.parse(partes[3].trim(), formatter);
+
+        Funcion funcion = funcionController.buscarFuncion(idFuncion);
+        Cliente cliente = clienteController.buscarCliente(idCliente);
+        if (funcion == null || cliente == null) {
+            JOptionPane.showMessageDialog(this, "Funcion o Cliente no encontrados.",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        reserva.setFuncion(funcion);
+        reserva.setCliente(cliente);
+        reserva.setNum_asientos(numAsientos);
+        reserva.setFecha_reserva(fechaHora);
+        controller.actualizarReserva(reserva);
+        cargarReservasDesdeBD();
+
+    } catch (NumberFormatException | DateTimeParseException e) {
+        JOptionPane.showMessageDialog(this, "Formato de datos incorrecto: " + e.getMessage(),
+                "Error", JOptionPane.ERROR_MESSAGE);
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this, "Error al actualizar reserva: " + e.getMessage(),
+                "Error", JOptionPane.ERROR_MESSAGE);
+    }
 
 
     }//GEN-LAST:event_editarActionPerformed
