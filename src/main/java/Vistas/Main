@@ -1,0 +1,117 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package Vistas;
+
+import Modelos.Cliente;
+import java.awt.GridLayout;
+import java.io.IOException;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+
+/**
+ *
+ * @author rocio
+ */
+public class Main {
+
+    public static void main(String[] args) {
+
+       
+        SwingUtilities.invokeLater(() -> {
+            JFrame menuPrincipal = crearMenuPrincipal(); // creo ventana principal
+            menuPrincipal.setVisible(true);              // muestro ventana
+        });
+    }
+
+    private static JFrame crearMenuPrincipal() {
+        JFrame frame = new JFrame("CinesRosio - Menú Principal");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(300, 250);
+        frame.setLocationRelativeTo(null);  // Centrar ventana
+
+        // 7 filas, 1 columna
+        frame.setLayout(new GridLayout(7, 1, 5, 5));
+
+        // creo botones 
+        JButton clienteBtn = new JButton("Registrar Cliente");
+        JButton listaClientesBtn = new JButton("Ver Clientes");
+        JButton listaReservasBtn = new JButton("Ver Reservas");
+        JButton listaFuncionesBtn = new JButton("Ver Funciones");
+        JButton listaPeliculasBtn = new JButton("Ver Películas");
+        JButton salirBtn = new JButton("Salir");
+
+        // pongo acciones para que las haga segun el boton pulsado
+        clienteBtn.addActionListener(e -> abrirVentanaSegunOpcion(1, frame));
+        listaClientesBtn.addActionListener(e -> abrirVentanaSegunOpcion(2, frame));
+        listaReservasBtn.addActionListener(e -> abrirVentanaSegunOpcion(3, frame));
+        listaFuncionesBtn.addActionListener(e -> abrirVentanaSegunOpcion(4, frame));
+        listaPeliculasBtn.addActionListener(e -> abrirVentanaSegunOpcion(5, frame));
+        salirBtn.addActionListener(e -> System.exit(0));  // Cerrar la aplicación
+
+        // añado botones
+        frame.add(clienteBtn);
+        frame.add(listaClientesBtn);
+        frame.add(listaReservasBtn);
+        frame.add(listaFuncionesBtn);
+        frame.add(listaPeliculasBtn);
+        frame.add(salirBtn);
+
+        return frame;
+    }
+
+    private static void abrirVentanaSegunOpcion(int opcion, JFrame menuPrincipal) {
+        menuPrincipal.setVisible(false);  // Ocultar menú principal
+
+        try {
+            switch (opcion) {
+                case 1:
+                    // registrar un nuevo cliente
+                    Cliente clienteExistente = null;
+                    ClienteDialog clienteDialog = new ClienteDialog(menuPrincipal, true, clienteExistente);
+                    clienteDialog.setVisible(true);
+                    break;
+                case 2:
+                    // enseñar lista de clientes
+                    mostrarFrameModal(new ListaClientes(), menuPrincipal);
+                    break;
+                case 3:
+                    // enseñar lista de reservas
+                    mostrarFrameModal(new ListaReservas(), menuPrincipal);
+                    break;
+                case 4:
+                    // enseñar lista de funciones
+                    mostrarFrameModal(new ListaFunciones(), menuPrincipal);
+                    break;
+                case 5:
+                    // enseñar lista de peliculas
+                    mostrarFrameModal(new ListaPeliculas(), menuPrincipal);
+                    break;
+                default:
+                    // si opcion no validad enseñar error
+                    JOptionPane.showMessageDialog(menuPrincipal, "Opción no válida.");
+            }
+        } catch (IOException ex) {
+            // si hay error al abrir la ventana enseñar mensaje
+            JOptionPane.showMessageDialog(menuPrincipal, "Error al abrir la ventana: " + ex.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            ex.printStackTrace();
+        }
+    }
+
+    private static void mostrarFrameModal(JFrame frame, JFrame menuPrincipal) {
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Cerrar ventana sin salir
+        frame.setVisible(true);                                   // Mostrar ventana
+
+        // si se cierran ventanas secundarias que siga el menu
+        frame.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosed(java.awt.event.WindowEvent e) {
+                menuPrincipal.setVisible(true);
+            }
+        });
+    }
+}
