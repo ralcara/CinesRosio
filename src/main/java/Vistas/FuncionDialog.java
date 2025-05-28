@@ -33,34 +33,41 @@ public class FuncionDialog extends javax.swing.JDialog {
         funcionController = new FuncionController();
         this.funcion = funcionExistente;
 
-        if (funcion != null) {
-            setTitle("Editar Función");
-            ID.setText(String.valueOf(funcion.getPelicula().getId_pelicula()));
-            Fecha.setText(funcion.getFecha().toString());  // LocalDate a String
-            Hora.setText(funcion.getHora().toString());    // LocalTime a String
-            Sala.setText(String.valueOf(funcion.getSala()));
-            ID.setEnabled(false); // no permitir editar ID película
-        } else {
-            setTitle("Registrar Función");
-        }
+        
+    funcionController = new FuncionController(); 
+    this.funcion = funcionExistente;  
+    if (funcion != null) {
+        //  cargar datos para editar
+        setTitle("Editar Función");
+        ID.setText(String.valueOf(funcion.getPelicula().getId_pelicula()));  // enseñar id de lapelicula
+        Fecha.setText(funcion.getFecha().toString());  // Convertir LocalDate a String para mostrar
+        Hora.setText(funcion.getHora().toString());    // Convertir LocalTime a String para mostrar
+        Sala.setText(String.valueOf(funcion.getSala())); 
+        ID.setEnabled(false);  // no cambiar id pelicula
+    } else {
+        // si no hay na enseñar titulo
+        setTitle("Registrar Función");
     }
+}
 
-    private boolean controlarCampos() {
-        if (ID.getText().isEmpty() || Fecha.getText().isEmpty() || Hora.getText().isEmpty() || Sala.getText().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Todos los campos son obligatorios");
-            return false;
-        }
-        try {
-            Integer.parseInt(ID.getText());
-            LocalDate.parse(Fecha.getText());
-            LocalTime.parse(Hora.getText());
-            Integer.parseInt(Sala.getText());
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Revise que los datos tengan el formato correcto");
-            return false;
-        }
-        return true;
+private boolean controlarCampos() {
+    //  que ningun campo este vacio
+    if (ID.getText().isEmpty() || Fecha.getText().isEmpty() || Hora.getText().isEmpty() || Sala.getText().isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Todos los campos son obligatorios");
+        return false;
     }
+    try {
+        // controlar formatos
+        Integer.parseInt(ID.getText());
+        LocalDate.parse(Fecha.getText());
+        LocalTime.parse(Hora.getText());
+        Integer.parseInt(Sala.getText());
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this, "Introduce los datos de manera correcta");
+        return false;
+    }
+    return true;
+}
 
 
     /**
@@ -210,53 +217,43 @@ public class FuncionDialog extends javax.swing.JDialog {
 
     private void GuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GuardarActionPerformed
         // TODO add your handling code here:
-         if (!controlarCampos()) {
-            return;
-        }
-
-        try {
-            int idPelicula = Integer.parseInt(ID.getText());
-            Pelicula pelicula = buscarPeliculaPorId(idPelicula);
-            if (pelicula == null) {
-                JOptionPane.showMessageDialog(this, "Película no encontrada con ID: " + idPelicula);
-                return;
-            }
-
-            LocalDate fecha = LocalDate.parse(Fecha.getText());
-            LocalTime hora = LocalTime.parse(Hora.getText());
-            int sala = Integer.parseInt(Sala.getText());
-
-            if (funcion == null) {
-                
-                funcion = new Funcion(fecha, pelicula, hora, sala);
-            } else {
-                funcion.setFecha(fecha);
-                funcion.setPelicula(pelicula);
-                funcion.setHora(hora);
-                funcion.setSala(sala);
-            }
-
-            if (funcion.getId_funcion() == 0) {
-                funcionController.crearFuncion(funcion);
-                JOptionPane.showMessageDialog(this, "Función creada con éxito");
-            } else {
-                funcionController.actualizarFuncion(funcion);
-                JOptionPane.showMessageDialog(this, "Función actualizada con éxito");
-            }
-
-            dispose();
-
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Error al guardar la función: " + ex.getMessage());
-        }
+            if (!controlarCampos()) {
+        return;
     }
 
-    private Pelicula buscarPeliculaPorId(int id) {
-        // Aquí puedes usar un PeliculaController similar a FuncionController
-        // Para el ejemplo, retorna null o haz la consulta adecuada
-        return null; // <- Implementa según tu proyecto
+    try {
+        int idPelicula = Integer.parseInt(ID.getText());
+        LocalDate fecha = LocalDate.parse(Fecha.getText());
+        LocalTime hora = LocalTime.parse(Hora.getText());
+        String sala = Sala.getText();
 
-    }//GEN-LAST:event_GuardarActionPerformed
+        Pelicula pelicula = new Pelicula();
+        pelicula.setId_pelicula(idPelicula);
+
+        if (funcion == null) {
+            // Crear nueva función
+            funcion = new Funcion();
+            funcion.setPelicula(pelicula);
+            funcion.setFecha(fecha);
+            funcion.setHora(hora);
+            funcion.setSala(sala);
+            funcionController.crearFuncion(funcion);
+            JOptionPane.showMessageDialog(this, "Función registrada correctamente.");
+        } else {
+            funcion.setFecha(fecha);
+            funcion.setHora(hora);
+            funcion.setSala(sala);
+            funcionController.actualizarFuncion(funcion);
+            JOptionPane.showMessageDialog(this, "Función actualizada correctamente.");
+        }
+
+        dispose(); 
+
+    } catch (Exception ex) {
+        JOptionPane.showMessageDialog(this, "Error al guardar la función: " + ex.getMessage());
+        ex.printStackTrace();
+    }
+    }
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
