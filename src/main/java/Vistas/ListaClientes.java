@@ -161,14 +161,19 @@ public class ListaClientes extends javax.swing.JFrame {
 
     private void EliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EliminarActionPerformed
         // TODO add your handling code here:
-        int index = listaClientes.getSelectedIndex();
-        if (index != -1) {
-            Cliente cliente = listaEntidades.get(index);
-            controller.eliminarCliente(cliente.getId_cliente());
-            cargarClientesDesdeBD();
-        } else {
-            JOptionPane.showMessageDialog(this, "Seleccione un cliente para eliminar.");
-        }
+        //enseñar lista de clientes
+int index = listaClientes.getSelectedIndex();
+
+if (index != -1) {  // seleccionar cliente
+    // coger el cliente seleccionado
+    Cliente cliente = listaEntidades.get(index);
+    controller.eliminarCliente(cliente.getIdCliente());
+    // enseñar el cambio
+    cargarClientesDesdeBD();
+} else {
+    // si no se ha seleccionado cliente
+    JOptionPane.showMessageDialog(this, "Seleccione un cliente para eliminar.");
+}
 
 
     }//GEN-LAST:event_EliminarActionPerformed
