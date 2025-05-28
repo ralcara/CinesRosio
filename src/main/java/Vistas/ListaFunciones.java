@@ -147,28 +147,28 @@ public class ListaFunciones extends javax.swing.JFrame {
 
     private void EditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EditarActionPerformed
         // TODO add your handling code here
-        int selectedIndex = Lista.getSelectedIndex();
+         int selectedIndex = Lista.getSelectedIndex();
         if (selectedIndex != -1) {
             Funcion f = listaFunciones.get(selectedIndex);
             String datosActuales = f.getPelicula().getId_pelicula() + "," + f.getFecha() + "," + f.getHora() + "," + f.getSala();
-
             String nueva = JOptionPane.showInputDialog(this, "Editar función (ID_Pelicula,Fecha(YYYY-MM-DD),Hora(HH:mm:ss),Sala):", datosActuales);
-
             if (nueva != null && !nueva.trim().isEmpty()) {
                 try {
                     String[] partes = nueva.split(",");
                     if (partes.length != 4) {
                         throw new IllegalArgumentException("Formato incorrecto");
                     }
-
                     int idPelicula = Integer.parseInt(partes[0].trim());
                     LocalDate fecha = LocalDate.parse(partes[1].trim());
                     LocalTime hora = LocalTime.parse(partes[2].trim());
-                    int sala = Integer.parseInt(partes[3].trim());
 
-                    Pelicula nuevaPelicula = new Pelicula();
-                    nuevaPelicula.setId_pelicula(idPelicula);
+                    String sala = partes[3].trim();
 
+                    Pelicula nuevaPelicula = PeliculaController.buscarPorId(idPelicula);
+                    if (nuevaPelicula == null) {
+                        JOptionPane.showMessageDialog(this, "Película con ID " + idPelicula + " no encontrada.", "Error", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
                     f.setPelicula(nuevaPelicula);
                     f.setFecha(fecha);
                     f.setHora(hora);
@@ -176,21 +176,21 @@ public class ListaFunciones extends javax.swing.JFrame {
 
                     funcionController.actualizarFuncion(f);
                     guardarCambios();
-
                 } catch (Exception e) {
-                    JOptionPane.showMessageDialog(this, "Formato incorrecto. Use ID_Pelicula,Fecha,Hora,Sala\nEjemplo: 1,2025-05-26,18:30:00,3", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this,
+                            "Formato incorrecto. Use ID_Pelicula,Fecha,Hora,Sala\nEjemplo: 1,2025-05-26,18:30:00,3",
+                            "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         } else {
             JOptionPane.showMessageDialog(this, "Seleccione una función para editar.");
         }
 
-
     }//GEN-LAST:event_EditarActionPerformed
 
     private void EliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EliminarActionPerformed
         // TODO add your handling code here:
-        int selectedIndex = Lista.getSelectedIndex();
+       int selectedIndex = Lista.getSelectedIndex();
         if (selectedIndex != -1) {
             Funcion f = listaFunciones.get(selectedIndex);
             try {
@@ -214,31 +214,32 @@ public class ListaFunciones extends javax.swing.JFrame {
 
     private void AñadirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AñadirActionPerformed
         // TODO add your handling code here:
-        String nueva = JOptionPane.showInputDialog(this, "Nueva función (ID_Pelicula,Fecha(YYYY-MM-DD),Hora(HH:mm:ss),Sala):");
+         String nueva = JOptionPane.showInputDialog(this, "Nueva función (ID_Pelicula,Fecha(YYYY-MM-DD),Hora(HH:mm:ss),Sala):");
         if (nueva != null && !nueva.trim().isEmpty()) {
             try {
                 String[] partes = nueva.split(",");
                 if (partes.length != 4) {
                     throw new IllegalArgumentException("Formato incorrecto");
                 }
-
                 int idPelicula = Integer.parseInt(partes[0].trim());
                 LocalDate fecha = LocalDate.parse(partes[1].trim());
                 LocalTime hora = LocalTime.parse(partes[2].trim());
                 int sala = Integer.parseInt(partes[3].trim());
 
-                Pelicula pelicula = new Pelicula();
-                pelicula.setId_pelicula(idPelicula);
-
-                Funcion nuevaFuncion = new Funcion(fecha, pelicula, hora, sala);
-
+                Pelicula pelicula = PeliculaController.buscarPorId(idPelicula);
+                if (pelicula == null) {
+                    JOptionPane.showMessageDialog(this, "Película con ID " + idPelicula + " no encontrada.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                Funcion nuevaFuncion = new Funcion(fecha, pelicula, hora, nueva);
                 funcionController.crearFuncion(nuevaFuncion);
                 guardarCambios();
-
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(this, "Formato incorrecto. Use ID_Pelicula,Fecha,Hora,Sala", "Error", JOptionPane.ERROR_MESSAGE);
             }
+
         }
+
 
 
     }//GEN-LAST:event_AñadirActionPerformed
