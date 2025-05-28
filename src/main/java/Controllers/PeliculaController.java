@@ -67,4 +67,20 @@ public class PeliculaController {
             em.close();
         }
     }
+     public static Pelicula buscarPorId(int id) {
+        EntityManager em = null;
+        Pelicula pelicula = null;
+        try {
+            em = JPA.getEntityManager();
+            pelicula = em.find(Pelicula.class, id);
+        } catch (Exception e) {
+            System.err.println("Error al buscar película: " + e.getMessage());
+        } finally {
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
+        }
+        return pelicula;
+    }
+}
 }
