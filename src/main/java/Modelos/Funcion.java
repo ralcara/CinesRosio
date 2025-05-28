@@ -16,38 +16,48 @@ import java.util.List;
  * @author rocio
  */
 
+
 @Entity
+@Table(name = "funcion")
 public class Funcion {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id_funcion;
 
     @ManyToOne
-    @JoinColumn(name = "id_pelicula")
+    @JoinColumn(name = "id_pelicula", nullable = false)
     private Pelicula pelicula;
 
+    @Column(name = "fecha", nullable = false)
     private LocalDate fecha;
+
+    @Column(name = "hora", nullable = false)
     private LocalTime hora;
-    private int sala;
+
+    @Column(name = "sala")
+    private String sala;
 
     @OneToMany(mappedBy = "funcion", cascade = CascadeType.ALL)
     private List<Reserva> reservas;
 
-    public Funcion(LocalDate fecha, Pelicula pelicula, LocalTime hora, int sala) {
-        this.fecha = fecha;
-        this.pelicula = pelicula;
-        this.hora = hora;
-        this.sala = sala;
+    public Funcion() {
     }
 
-    public Funcion(int id_funcion, Pelicula pelicula, LocalDate fecha, LocalTime hora, int sala, List<Reserva> reservas) {
-        this.id_funcion = id_funcion;
+    public Funcion(Pelicula pelicula, LocalDate fecha, LocalTime hora, String sala, List<Reserva> reservas) {
         this.pelicula = pelicula;
         this.fecha = fecha;
         this.hora = hora;
         this.sala = sala;
         this.reservas = reservas;
+    }
+
+    public Funcion(LocalDate fecha, Pelicula pelicula, LocalTime hora, String sala) {
+        this.fecha = fecha;
+        this.pelicula = pelicula;
+        this.hora = hora;
+        this.sala = sala;
     }
 
     public int getId_funcion() {
@@ -82,11 +92,11 @@ public class Funcion {
         this.hora = hora;
     }
 
-    public int getSala() {
+    public String getSala() {
         return sala;
     }
 
-    public void setSala(int sala) {
+    public void setSala(String sala) {
         this.sala = sala;
     }
 
@@ -100,7 +110,12 @@ public class Funcion {
 
     @Override
     public String toString() {
-        return getPelicula() + ", " + getFecha() + ", " + getHora() + ", Sala: " + getSala();
+        return "Funcion{" +
+                "id_funcion=" + id_funcion +
+                ", pelicula=" + pelicula +
+                ", fecha=" + fecha +
+                ", hora=" + hora +
+                ", sala='" + sala + '\'' +
+                '}';
     }
-
 }
