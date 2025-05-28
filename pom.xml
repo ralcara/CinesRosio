@@ -41,7 +41,7 @@
 
     <build>
         <plugins>
-            <!-- Compilador sin preview -->
+            <!-- Compilador con release 17 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
